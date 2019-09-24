@@ -171,58 +171,6 @@ const setupLabeller = (name, svg) => {
   });
 };
 
-const autoSplit = () => {
-  const oldSelection = state.selection;
-  const splitGroups = {};
-  state.getGroupMembers(oldSelection).forEach(p => splitGroups[state.newGroup()] = [p]);
-
-  const canMerge = (groupA, groupB) => {
-    let minDist = Infinity;
-    const STEP = 10;
-    splitGroups[groupA].forEach(pA => {
-      for (let tA = 0; tA < pA.getTotalLength(); tA += STEP) {
-        const pointA = pA.getPointAtLength(tA);
-        splitGroups[groupB].forEach(pB => {
-          for (let tB = 0; tB < pB.getTotalLength(); tB += STEP) {
-            const pointB = pB.getPointAtLength(tB);
-            const dist = Math.hypot(pointA.x-pointB.x, pointA.y-pointB.y);
-            minDist = Math.min(minDist, dist);
-          }
-        });
-      }
-    });
-
-    return minDist < 10;
-  };
-
-  let changed = true;
-  while (changed) {
-    changed = false;
-    for (let groupA in splitGroups) {
-      for (let groupB in splitGroups) {
-        if (groupA === groupB) continue;
-
-        if (canMerge(groupA, groupB)) {
-          splitGroups[groupA] = splitGroups[groupA].concat(splitGroups[groupB]);
-          delete splitGroups[groupB];
-          changed = true;
-        }
-      }
-    }
-  }
-
-  state.setState({
-    selection: null
-  });
-  state.setState({
-    groups: {
-      ...state.groups,
-      [ oldSelection ]: undefined,
-      ...splitGroups
-    }
-  })
-};
-
 // Add keyboard handling
 document.addEventListener('keyup', (event) => {
   if (document.body.classList.contains('selection')) {
@@ -242,8 +190,6 @@ document.addEventListener('keyup', (event) => {
         },
         subSelection: []
       });
-    } else if (event.key === '4' && !state.merge && !state.split) {
-      autoSplit();
     } else if (event.key === 'Escape') {
       state.setState({
         split: false,
@@ -251,12 +197,6 @@ document.addEventListener('keyup', (event) => {
         subSelection: [],
         selection: null
       });
-    }
-  } else if (event.key === '5') {
-    for (let group in state.groups) {
-      if (!state.groups[group]) continue;
-      state.setState({ selection: group });
-      autoSplit();
     }
   }
 });

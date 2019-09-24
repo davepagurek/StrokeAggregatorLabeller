@@ -1,22 +1,16 @@
 #modes {
   padding: 20px;
 }
-#merge, #split, #confirm, #auto {
+#merge, #split, #confirm {
   opacity: 0.2;
 }
-#auto-all {
+.selection #merge, .selection #split {
   opacity: 1;
 }
-.selection #auto-all {
+.merge.selection #split, .merge.selection #confirm, .merge.selection #merge {
   opacity: 0.2;
 }
-.selection #merge, .selection #split, .selection #auto {
-  opacity: 1;
-}
-.merge.selection #split, .merge.selection #confirm, .merge.selection #merge, .merge.selection #auto {
-  opacity: 0.2;
-}
-.split.selection #merge, .split.selection #split, .split.selection #auto {
+.split.selection #merge, .split.selection #split {
   opacity: 0.2;
 }
 .selection #confirm {
