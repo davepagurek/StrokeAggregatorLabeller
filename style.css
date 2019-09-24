@@ -1,0 +1,114 @@
+#modes {
+  padding: 20px;
+}
+#merge, #split, #confirm, #auto {
+  opacity: 0.2;
+}
+#auto-all {
+  opacity: 1;
+}
+.selection #auto-all {
+  opacity: 0.2;
+}
+.selection #merge, .selection #split, .selection #auto {
+  opacity: 1;
+}
+.merge.selection #split, .merge.selection #confirm, .merge.selection #merge, .merge.selection #auto {
+  opacity: 0.2;
+}
+.split.selection #merge, .split.selection #split, .split.selection #auto {
+  opacity: 0.2;
+}
+.selection #confirm {
+  opacity: 0.2;
+}
+.split.selection.subselection #confirm {
+  opacity: 1;
+}
+
+path {
+  stroke-width: 4px !important;
+  opacity: 0.5;
+  cursor: pointer;
+  transition: all linear 0.2s;
+  fill: none;
+}
+path:hover {
+  opacity: 1;
+}
+path.selected {
+  stroke-width: 5px !important;
+  stroke: #000 !important;
+  opacity: 1;
+}
+
+.merge path.selected {
+  pointer-events: none;
+  opacity: 0.2;
+}
+
+.split path {
+  opacity: 0.1;
+  pointer-events: none;
+}
+.split path.selected {
+  opacity: 0.2;
+  pointer-events: auto;
+}
+.split path.selected:hover {
+  opacity: 1;
+}
+.split path.selected.subSelection {
+  opacity: 1;
+  stroke: #F0F !important;
+}
+
+html, body {
+  padding: 0;
+  margin: 0;
+  min-height: 100vh;
+}
+body {
+  display: flex;
+  align-items: stretch;
+}
+#app {
+  max-height: 100vh;
+  width: 100%;
+}
+section {
+  display: flex;
+  padding: 10px;
+}
+.column {
+  display: flex;
+  flex-direction: column;
+}
+#export {
+  padding: 50px;
+  display: flex;
+  flex: 1;
+  justify-content: center;
+  align-items: center;
+}
+#header {
+  background-color: #EEE;
+}
+#editor {
+  flex: 1;
+}
+#svgContainer {
+  flex: 1;
+  align-self: stretch;
+  display: flex;
+  position: relative;
+}
+svg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 100% !important;
+  width: 100% !imortant;
+}
