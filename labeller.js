@@ -7,12 +7,15 @@ const chars = '0123456789abcdef';
 const makeColor =
   () => '#' + [1,2,3,4,5,6].map(_ => chars.charAt(Math.floor(Math.random() * chars.length))).join('');
 
+let breakIndicator = null;
 const state = {
   paths: [], // References to all svg path elements onscreen
   groups: {}, // Path elements indexed by their colour
   selection: null, // The group currently selected
   merge: false,
   split: false,
+  breakAt: null,
+  splits: {},
   subSelection: [], // In split mode, the individual path elements that are set to become their own group
   name: '', // The base name of the file
 
@@ -80,10 +83,76 @@ const state = {
         } else {
           document.body.classList.remove('subSelection');
         }
+        if (newState.subSelection.length === 1) {
+          document.body.classList.add('single');
+        } else {
+          document.body.classList.remove('single');
+        }
+
+      } else if (key === 'breakAt') {
+        if (newState.breakAt !== null) {
+          document.body.classList.add('breaking');
+
+          const p = state.subSelection[0];
+          const point = p.getPointAtLength(newState.breakAt * p.getTotalLength());
+          breakIndicator.setAttribute('cx', point.x);
+          breakIndicator.setAttribute('cy', point.y);
+        } else {
+          document.body.classList.remove('breaking');
+        }
       }
 
       state[key] = newState[key];
     }
+  },
+
+  breakStroke: () => {
+    const path = state.subSelection[0];
+    const points = path
+      .getAttribute('d')
+      .substring(2)
+      .split(' L ')
+      .map(coordStr => {
+        const coords = coordStr.split(' ');
+        return coords.map(x => parseFloat(x));
+      });
+
+    const splitDist = state.breakAt * path.getTotalLength();
+    const splitPoint = path.getPointAtLength(splitDist);
+    let dist = 0;
+    let splitIdx = 0;
+    for (let i = 1; i < points.length; i++) {
+      dist += Math.hypot(points[i][0]-points[i-1][0], points[i][1]-points[i-1][1]);
+      if (dist > splitDist) {
+        splitIdx = i;
+        break;
+      }
+    }
+
+    const pointsStart = [...points.slice(0, splitIdx), [splitPoint.x, splitPoint.y]];
+    const pointsEnd = [[splitPoint.x, splitPoint.y], ...points.slice(splitIdx)];
+
+    const paths = [pointsStart, pointsEnd].map(polyline => {
+      const element = document.createElementNS(ns, 'path');
+      element.setAttribute('data-globalId', Math.max(...state.paths.map(p => parseInt(p.getAttribute('data-globalId'))))+1);
+      element.setAttribute('d', `M ${polyline[0][0].toPrecision(6)} ${polyline[0][1].toPrecision(6)} ` +
+        polyline.slice(1).map(([x,y]) => `L ${x.toPrecision(6)} ${y.toPrecision(6)}`).join(' '));
+      const group = state.newGroup();
+      element.setAttribute('stroke', group);
+      state.groups[group] = [ element ];
+      path.parentElement.insertBefore(element, path);
+      state.paths.push(element);
+      element.addEventListener('click', pathClickHandler(element));
+      return element;
+    });
+
+    state.splits[paths[0].getAttribute('data-globalId')] = path.getAttribute('data-globalId');
+    state.splits[paths[1].getAttribute('data-globalId')] = path.getAttribute('data-globalId');
+    state.groups[state.getGroup(path)] = state.groups[state.getGroup(path)].filter(p => p != path);
+    state.paths = state.paths.filter(p => p != path);
+    path.parentElement.removeChild(path);
+
+    state.setState({ selection: null, subSelection: [], split: false, breakAt: null });
   },
 
   getGroup: path => path.getAttribute('stroke') || '',
@@ -103,6 +172,7 @@ const state = {
 // Converts current state to a .scap file
 const generateScap = () => {
   const svg = document.querySelector('svg');
+
   let nextGroup = 0;
   const groupIndex = {};
   for (let group in state.groups) {
@@ -125,49 +195,62 @@ const generateScap = () => {
           .join('\n') +
         '\n}\n'
       )).join('')
-    ).join('')
+    ).join('') +
+    '\n\n' +
+    Object.keys(state.splits).map(child => `${state.splits[child]} -> ${child}`).join('\n')
   );
+};
+
+const pathClickHandler = path => () => {
+  if (state.merge) {
+    if (state.getGroup(path) !== state.selection) {
+      state.setState({
+        groups: {
+          ...state.groups,
+          [ state.selection ]: [
+            ...state.getGroupMembers(state.selection),
+            ...state.getGroupMembers(state.getGroup(path))
+          ],
+          [ state.getGroup(path) ]: undefined
+        }
+      });
+    }
+
+  } else if (state.split) {
+    if (state.subSelected(path)) {
+      state.setState({
+        subSelection: state.subSelection.filter(p => p !== path)
+      });
+    } else if (state.getGroup(path) === state.selection) {
+      state.setState({
+        subSelection: [ ...state.subSelection, path ]
+      });
+    }
+
+  } else {
+    state.setState({ selection: state.getGroup(path) });
+  }
 };
 
 const setupLabeller = (name, svg) => {
   paths = [ ...svg.querySelectorAll('path') ];
 
+  breakIndicator = document.createElementNS(ns, 'ellipse');
+  breakIndicator.setAttribute('id', 'breakIndicator');
+  breakIndicator.setAttribute('rx', '4');
+  breakIndicator.setAttribute('ry', '4');
+  breakIndicator.setAttribute('stroke', '#000');
+  breakIndicator.setAttribute('stroke-width', '1');
+  breakIndicator.setAttribute('fill', 'rgba(255,0,0,0.5)');
+  svg.appendChild(breakIndicator);
+
   // Reset state
   state.setState({ name, paths });
-  state.setState({ selection: null, merge: false, split: false, subSelection: [] });
+  state.setState({ selection: null, merge: false, split: false, subSelection: [], breakAt: null, splits: {} });
 
   // Add click handlers on each new path element
   paths.forEach(path => {
-    path.addEventListener('click', () => {
-      if (state.merge) {
-        if (state.getGroup(path) !== state.selection) {
-          state.setState({
-            groups: {
-              ...state.groups,
-              [ state.selection ]: [
-                ...state.getGroupMembers(state.selection),
-                ...state.getGroupMembers(state.getGroup(path))
-              ],
-              [ state.getGroup(path) ]: undefined
-            }
-          });
-        }
-
-      } else if (state.split) {
-        if (state.subSelected(path)) {
-          state.setState({
-            subSelection: state.subSelection.filter(p => p !== path)
-          });
-        } else if (state.getGroup(path) === state.selection) {
-          state.setState({
-            subSelection: [ ...state.subSelection, path ]
-          });
-        }
-
-      } else {
-        state.setState({ selection: state.getGroup(path) });
-      }
-    });
+    path.addEventListener('click', pathClickHandler(path))
   });
 };
 
@@ -176,7 +259,7 @@ document.addEventListener('keyup', (event) => {
   if (document.body.classList.contains('selection')) {
     if (event.key === '1' && !state.merge && !state.split) {
       state.setState({ merge: true });
-    } else if (event.key === '2' && !state.merge && !state.split) {
+    } else if (event.key === '2' && !state.merge && !state.split && state.breakAt === null) {
       state.setState({ split: true });
     } else if (event.key === '3' && state.split && state.subSelection.length > 0) {
       const oldSelection = state.selection;
@@ -190,14 +273,28 @@ document.addEventListener('keyup', (event) => {
         },
         subSelection: []
       });
+    } else if (event.key === '4' && state.split && state.subSelection.length === 1) {
+      if (state.breakAt === null) {
+        state.setState({ breakAt: 0.5 });
+      } else {
+        state.breakStroke();
+      }
     } else if (event.key === 'Escape') {
       state.setState({
         split: false,
         merge: false,
+        breakAt: null,
         subSelection: [],
         selection: null
       });
     }
+  }
+});
+
+document.addEventListener('mousemove', (event) => {
+  if (state.breakAt !== null) {
+    const breakAt = Math.min(1, Math.max(0, event.clientX / document.body.clientWidth));
+    state.setState({ breakAt });
   }
 });
 
