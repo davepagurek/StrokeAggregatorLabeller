@@ -118,7 +118,6 @@ const state = {
       });
 
     const splitDist = state.breakAt * path.getTotalLength();
-    const splitPoint = path.getPointAtLength(splitDist);
     let dist = 0;
     let splitIdx = 0;
     for (let i = 1; i < points.length; i++) {
@@ -129,8 +128,8 @@ const state = {
       }
     }
 
-    const pointsStart = [...points.slice(0, splitIdx), [splitPoint.x, splitPoint.y]];
-    const pointsEnd = [[splitPoint.x, splitPoint.y], ...points.slice(splitIdx)];
+    const pointsStart = points.slice(0, splitIdx+1);
+    const pointsEnd = points.slice(splitIdx);
 
     const paths = [pointsStart, pointsEnd].map(polyline => {
       const element = document.createElementNS(ns, 'path');
@@ -146,8 +145,8 @@ const state = {
       return element;
     });
 
-    state.splits[paths[0].getAttribute('data-globalId')] = path.getAttribute('data-globalId');
-    state.splits[paths[1].getAttribute('data-globalId')] = path.getAttribute('data-globalId');
+    state.splits[paths[0].getAttribute('data-globalId')] = [ path.getAttribute('data-globalId'), 0, splitIdx+1 ];
+    state.splits[paths[1].getAttribute('data-globalId')] = [ path.getAttribute('data-globalId'), splitIdx, points.length ];
     state.groups[state.getGroup(path)] = state.groups[state.getGroup(path)].filter(p => p != path);
     state.paths = state.paths.filter(p => p != path);
     path.parentElement.removeChild(path);
@@ -184,21 +183,40 @@ const generateScap = () => {
     `#${svg.getAttribute('width')} ${svg.getAttribute('height')}\n` +
     '@1.5\n' +
     Object.keys(state.groups).filter(g => state.groups[g]).map(group =>
-      state.groups[group].map(path => (
-        '{\n' +
-        `\t#${path.getAttribute('data-globalId')}\t${groupIndex[group]}\n` +
-        path
-          .getAttribute('d')
-          .substring(2)
-          .split(' L ')
-          .map(coord => `\t${coord.replace(' ', '\t')}\t0`)
-          .join('\n') +
-        '\n}\n'
-      )).join('')
-    ).join('') +
-    '\n\n' +
-    Object.keys(state.splits).map(child => `${state.splits[child]} -> ${child}`).join('\n')
+      state.groups[group].map(path => {
+        const pathId = path.getAttribute('data-globalId');
+        const id = state.splits[pathId] ? state.splits[pathId][0] : pathId;
+        return (
+          '{\n' +
+          `\t#${id}\t${groupIndex[group]}\n` +
+          path
+            .getAttribute('d')
+            .substring(2)
+            .split(' L ')
+            .map(coord => `\t${coord.replace(' ', '\t')}\t0`)
+            .join('\n') +
+          '\n}\n'
+        );
+      }).join('')
+    ).join('')
   );
+};
+
+const generateSplits = () => {
+  let nextGroup = 0;
+  const groupIndex = {};
+  for (let group in state.groups) {
+    groupIndex[group] = nextGroup;
+    nextGroup++;
+  }
+
+  return (
+    Object.keys(state.splits).map(child => {
+      const [parent, from, to] = state.splits[child];
+      const group = groupIndex[state.getGroup(state.paths.find(p => p.getAttribute('data-globalId') == child))];
+      return `${parent}\t${from}\t${to}\t${group}\n`;
+    }).join('')
+  )
 };
 
 const pathClickHandler = path => () => {
@@ -298,14 +316,19 @@ document.addEventListener('mousemove', (event) => {
   }
 });
 
-document.getElementById('scap').addEventListener('click', () => {
+const download = (content, filename) => {
   const downloadLink = document.createElement('a');
-  const blob = new Blob([generateScap()], { type: 'text/plain;charset=utf-8' });
+  const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
   downloadLink.setAttribute('href', URL.createObjectURL(blob));
-  downloadLink.setAttribute('download', `${state.name}_cleaned.scap`);
+  downloadLink.setAttribute('download', filename);
   document.body.appendChild(downloadLink);
   downloadLink.click();
   document.body.removeChild(downloadLink);
+};
+
+document.getElementById('scap').addEventListener('click', () => {
+  download(generateScap(),  `${state.name}_cleaned.scap`);
+  download(generateSplits(),  `${state.name}_cleaned.split`);
 });
 
 // .scap reader. Currently unused, but useful for verifying in the js console that the
