@@ -1,6 +1,8 @@
 # Labeller
 
-## Setup
+Live: https://davepagurek.github.io/StrokeAggregatorLabeller/
+
+## Local setup
 
 From the base directory, run:
 
@@ -17,7 +19,9 @@ Open `localhost` at the port specified in the output of the python command (gene
 - Click on a path to select its group.
 - With a group selected:
   - Press the 1 key to enter merge mode. Any group you click on after this will be merged into the selected group.
-  - Press 2 to enter split mode. Individual paths you select will become highlighted, and all of which will become their own separate group after you hit 3 to apply the split.
+  - Press 2 to enter split mode. Individual paths you select will become highlighted.
+    - Press 3 to apply the split, making all highlighted paths their own group.
+    - If only one path is selected, pressing 4 will allow you to split the stroke into two. Move the mouse left and right to pick the split location and press 4 again to apply the split.
 - Press Esc to clear the current selection (and cancel an in-progress merge.)
 - The Export .scap button downloads a .scap of the current state.
 
