@@ -410,7 +410,7 @@ const loadInput = () => {
   }
 
   //fetch(`data/${name}_t_m_result_cluster.svg`)
-  fetch(`data/${name}_t_m_result_cluster.scap`)
+  fetch(name)
     .then(resp => resp.text())
     .then(src => {
       //console.log(src);
