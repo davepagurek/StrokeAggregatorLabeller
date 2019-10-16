@@ -17,7 +17,7 @@ const hexToRGB = hex => {
 const tooClose = (aHex, bHex) => {
   a = hexToRGB(aHex);
   b = hexToRGB(bHex);
-  return Math.hypot(a.r-b.r, a.g-b.g, a.b-b.b) < 50;
+  return Math.hypot(a.r-b.r, a.g-b.g, a.b-b.b) < 100;
 };
 
 let breakIndicator = null;
@@ -298,7 +298,7 @@ document.addEventListener('keyup', (event) => {
 
       const surrounding = [oldSelection];
       for (let color in state.groups) {
-        if (color == oldSelection) continue;
+        if (!state.groups[color] || color == oldSelection) continue;
 
         let minDist = Infinity;
         state.subSelection.forEach(p1 => {
@@ -367,9 +367,7 @@ document.getElementById('scap').addEventListener('click', () => {
   download(generateSplits(),  `${state.name}_cleaned.split`);
 });
 
-// .scap reader. Currently unused, but useful for verifying in the js console that the
-// export feature actually produces readable files
-const scapToSVG = scap => {
+const scapToSVG = function*(scap) {
   const tokens = scap.split(/\s+/m);
   let w = 100;
   let h = 100;
@@ -413,6 +411,7 @@ const scapToSVG = scap => {
   };
 
   readScap();
+  yield false;
 
   colors = {};
   groupColors = {};
@@ -438,11 +437,13 @@ const scapToSVG = scap => {
         surrounding.push(groupColors[other]);
       }
     }
+    yield false;
 
     let c = makeColor();
     while (colors[c] || surrounding.find(color => tooClose(color, c))) c = makeColor();
     colors[c] = true;
     groupColors[group] = c;
+    yield false;
   }
 
   const svg = document.createElementNS(ns, 'svg');
@@ -458,7 +459,7 @@ const scapToSVG = scap => {
     });
   }
 
-  return svg;
+  yield svg;
 };
 
 const loadInput = () => {
@@ -467,16 +468,42 @@ const loadInput = () => {
     return;
   }
 
+  while (svgContainer.firstChild) svgContainer.removeChild(svgContainer.firstChild);
+  const loader = document.createElement('h2');
+  loader.innerText = "Processing...";
+  svgContainer.appendChild(loader);
+
   //fetch(`data/${name}_t_m_result_cluster.svg`)
   fetch(name)
     .then(resp => resp.text())
     .then(src => {
       //console.log(src);
-      while (svgContainer.firstChild) svgContainer.removeChild(svgContainer.firstChild);
       state.setState({ selection: null });
-      svgContainer.appendChild(scapToSVG(src));
-      //svgContainer.innerHTML = src;
-      setupLabeller(name, svgContainer.querySelector('svg'));
+      const iterator = scapToSVG(src);
+
+      const timeBudget = 1/30;
+      let result = false;
+      const incrementalWork = () => {
+        const incrementalStartTime = new Date().getTime();
+
+        const existsTimeRemaining = () =>
+        (new Date().getTime() - incrementalStartTime) / 1000 < timeBudget;
+
+        while (!result && existsTimeRemaining()) {
+          result = iterator.next().value;
+        }
+
+        if (result) {
+          while (svgContainer.firstChild) svgContainer.removeChild(svgContainer.firstChild);
+          svgContainer.appendChild(result);
+          //svgContainer.innerHTML = src;
+          setupLabeller(name, svgContainer.querySelector('svg'));
+        } else {
+          window.requestAnimationFrame(incrementalWork);
+        }
+      };
+
+      window.requestAnimationFrame(incrementalWork);
     });
 };
 
