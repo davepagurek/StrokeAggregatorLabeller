@@ -6,6 +6,19 @@ const svgContainer = document.getElementById('svgContainer');
 const chars = '0123456789abcdef';
 const makeColor =
   () => '#' + [1,2,3,4,5,6].map(_ => chars.charAt(Math.floor(Math.random() * chars.length))).join('');
+const hexToRGB = hex => {
+    var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+    return result ? {
+        r: parseInt(result[1], 16),
+        g: parseInt(result[2], 16),
+        b: parseInt(result[3], 16)
+    } : null;
+};
+const tooClose = (aHex, bHex) => {
+  a = hexToRGB(aHex);
+  b = hexToRGB(bHex);
+  return Math.hypot(a.r-b.r, a.g-b.g, a.b-b.b) < 50;
+};
 
 let breakIndicator = null;
 const state = {
@@ -136,7 +149,7 @@ const state = {
       element.setAttribute('data-globalId', Math.max(...state.paths.map(p => parseInt(p.getAttribute('data-globalId'))))+1);
       element.setAttribute('d', `M ${polyline[0][0].toPrecision(6)} ${polyline[0][1].toPrecision(6)} ` +
         polyline.slice(1).map(([x,y]) => `L ${x.toPrecision(6)} ${y.toPrecision(6)}`).join(' '));
-      const group = state.newGroup();
+      const group = state.newGroup([state.getGroup(path)]);
       element.setAttribute('stroke', group);
       state.groups[group] = [ element ];
       path.parentElement.insertBefore(element, path);
@@ -160,9 +173,9 @@ const state = {
 
   subSelected: path => path.classList.contains('subSelection'),
 
-  newGroup: () => {
+  newGroup: (surrounding = []) => {
     let c = makeColor();
-    while (state.groups[c]) c = makeColor();
+    while (state.groups[c] || surrounding.find(color => tooClose(color, c))) c = makeColor();
 
     return c;
   }
@@ -282,12 +295,35 @@ document.addEventListener('keyup', (event) => {
     } else if (event.key === '3' && state.split && state.subSelection.length > 0) {
       const oldSelection = state.selection;
       state.setState({ selection: null });
+
+      const surrounding = [oldSelection];
+      for (let color in state.groups) {
+        if (color == oldSelection) continue;
+
+        let minDist = Infinity;
+        state.subSelection.forEach(p1 => {
+          for (let t1 = 0; t1 <= 1; t1 += 0.25) {
+            const pt1 = p1.getPointAtLength(t1 * p1.getTotalLength());
+            state.groups[color].forEach(p2 => {
+              for (let t2 = 0; t2 <= 1; t2 += 0.25) {
+                const pt2 = p2.getPointAtLength(t2 * p2.getTotalLength());
+                minDist = Math.min(minDist, Math.hypot(pt2.x-pt1.x, pt2.y-pt1.y));
+              }
+            });
+          }
+        });
+
+        if (minDist < 5) {
+          surrounding.push(color);
+        }
+      }
+
       state.setState({
         split: false,
         groups: {
           ...state.groups,
           [ oldSelection ]: state.getGroupMembers(oldSelection).filter(p => !state.subSelected(p)),
-          [ state.newGroup() ]: state.subSelection
+          [ state.newGroup(surrounding) ]: state.subSelection
         },
         subSelection: []
       });
@@ -381,8 +417,30 @@ const scapToSVG = scap => {
   colors = {};
   groupColors = {};
   for (let group in groups) {
+    const surrounding = [];
+    for (let other in groups) {
+      if (!groupColors[other]) continue;
+
+      let minDist = Infinity;
+      groups[group].forEach(path1 => {
+        const p1 = path1.polyline.map(p => p.split(' ').map(x => parseInt(x)));
+        [p1[0], p1[Math.floor(p1.length/2)], p1[p1.length-1]].forEach(([x1,y1]) => {
+          groups[other].forEach(path2 => {
+            const p2 = path2.polyline.map(p => p.split(' ').map(x => parseInt(x)));
+            [p2[0], p2[Math.floor(p2.length/2)], p2[p2.length-1]].forEach(([x2,y2]) => {
+              minDist = Math.min(minDist, Math.hypot(x2-x1, y2-y1));
+            });
+          });
+        });
+      });
+
+      if (minDist < 5) {
+        surrounding.push(groupColors[other]);
+      }
+    }
+
     let c = makeColor();
-    while (colors[c]) c = makeColor();
+    while (colors[c] || surrounding.find(color => tooClose(color, c))) c = makeColor();
     colors[c] = true;
     groupColors[group] = c;
   }
