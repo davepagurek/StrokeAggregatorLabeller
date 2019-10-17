@@ -260,6 +260,7 @@ const pathClickHandler = path => () => {
 
   } else {
     state.setState({ selection: state.getGroup(path) });
+    document.body.classList.remove('unselected');
   }
 };
 
@@ -285,65 +286,105 @@ const setupLabeller = (name, svg) => {
   });
 };
 
-// Add keyboard handling
-document.addEventListener('keyup', (event) => {
-  if (document.body.classList.contains('selection')) {
-    if (event.key === '1' && !state.merge && !state.split) {
-      state.setState({ merge: true });
-    } else if (event.key === '2' && !state.merge && !state.split && state.breakAt === null) {
-      state.setState({ split: true });
-    } else if (event.key === '3' && state.split && state.subSelection.length > 0) {
-      const oldSelection = state.selection;
-      state.setState({ selection: null });
+const handleMerge = () => {
+  if (!document.body.classList.contains('selection')) return;
+  if (!state.merge && !state.split) {
+    state.setState({ merge: true });
+  }
+};
 
-      const surrounding = [oldSelection];
-      for (let color in state.groups) {
-        if (!state.groups[color] || color == oldSelection) continue;
+const handleSplit = () => {
+  if (!document.body.classList.contains('selection')) return;
+  document.body.classList.remove('first-selection');
+  if (!state.merge && !state.split && state.breakAt === null) {
+    state.setState({ split: true });
+  }
+};
 
-        let minDist = Infinity;
-        state.subSelection.forEach(p1 => {
-          for (let t1 = 0; t1 <= 1; t1 += 0.25) {
-            const pt1 = p1.getPointAtLength(t1 * p1.getTotalLength());
-            state.groups[color].forEach(p2 => {
-              for (let t2 = 0; t2 <= 1; t2 += 0.25) {
-                const pt2 = p2.getPointAtLength(t2 * p2.getTotalLength());
-                minDist = Math.min(minDist, Math.hypot(pt2.x-pt1.x, pt2.y-pt1.y));
-              }
-            });
-          }
-        });
+const handleConfirm = () => {
+  if (!document.body.classList.contains('selection')) return;
+  document.body.classList.remove('first-split');
+  if (state.split && state.subSelection.length > 0) {
+    const oldSelection = state.selection;
+    state.setState({ selection: null });
 
-        if (minDist < 5) {
-          surrounding.push(color);
+    const surrounding = [oldSelection];
+    for (let color in state.groups) {
+      if (!state.groups[color] || color == oldSelection) continue;
+
+      let minDist = Infinity;
+      state.subSelection.forEach(p1 => {
+        for (let t1 = 0; t1 <= 1; t1 += 0.25) {
+          const pt1 = p1.getPointAtLength(t1 * p1.getTotalLength());
+          state.groups[color].forEach(p2 => {
+            for (let t2 = 0; t2 <= 1; t2 += 0.25) {
+              const pt2 = p2.getPointAtLength(t2 * p2.getTotalLength());
+              minDist = Math.min(minDist, Math.hypot(pt2.x-pt1.x, pt2.y-pt1.y));
+            }
+          });
         }
-      }
+      });
 
-      state.setState({
-        split: false,
-        groups: {
-          ...state.groups,
-          [ oldSelection ]: state.getGroupMembers(oldSelection).filter(p => !state.subSelected(p)),
-          [ state.newGroup(surrounding) ]: state.subSelection
-        },
-        subSelection: []
-      });
-    } else if (event.key === '4' && state.split && state.subSelection.length === 1) {
-      if (state.breakAt === null) {
-        state.setState({ breakAt: 0.5 });
-      } else {
-        state.breakStroke();
+      if (minDist < 10) {
+        surrounding.push(color);
       }
-    } else if (event.key === 'Escape') {
-      state.setState({
-        split: false,
-        merge: false,
-        breakAt: null,
-        subSelection: [],
-        selection: null
-      });
+    }
+
+    state.setState({
+      split: false,
+      groups: {
+        ...state.groups,
+        [ oldSelection ]: state.getGroupMembers(oldSelection).filter(p => !state.subSelected(p)),
+          [ state.newGroup(surrounding) ]: state.subSelection
+      },
+      subSelection: []
+    });
+  }
+};
+
+const handleBreak = () => {
+  if (!document.body.classList.contains('selection')) return;
+  if (event.key === '4') {
+    if (state.breakAt === null) {
+      state.setState({ breakAt: 0.5 });
+    } else {
+      state.breakStroke();
     }
   }
+};
+
+const handleEscape = () => {
+  if (!document.body.classList.contains('selection')) return;
+  if (state.selection) document.body.classList.remove('first-selection');
+  if (state.subSelection.length > 0) document.body.classList.remove('first-split');
+  state.setState({
+    split: false,
+    merge: false,
+    breakAt: null,
+    subSelection: [],
+    selection: null
+  });
+};
+
+// Add keyboard handling
+document.addEventListener('keyup', (event) => {
+  if (event.key === '1') {
+    handleMerge();
+  } else if (event.key === '2') {
+    handleSplit();
+  } else if (event.key === '3') {
+    handleConfirm();
+  } else if (event.key === '4') {
+    handleBreak();
+  } else if (event.key === 'Escape') {
+    handleEscape();
+  }
 });
+document.getElementById('merge').addEventListener('click', handleMerge);
+document.getElementById('split').addEventListener('click', handleSplit);
+document.getElementById('confirm').addEventListener('click', handleConfirm);
+document.getElementById('break').addEventListener('click', handleBreak);
+document.getElementById('escape').addEventListener('click', handleEscape);
 
 document.addEventListener('mousemove', (event) => {
   if (state.breakAt !== null) {
@@ -462,6 +503,7 @@ const scapToSVG = function*(scap) {
   yield svg;
 };
 
+let first = true;
 const loadInput = () => {
   const name = picker.value;
   if (!name) {
@@ -498,6 +540,12 @@ const loadInput = () => {
           svgContainer.appendChild(result);
           //svgContainer.innerHTML = src;
           setupLabeller(name, svgContainer.querySelector('svg'));
+          if (first) {
+            setTimeout(() => {
+              document.body.classList.add('unselected');
+            }, 1000);
+            first = false;
+          }
         } else {
           window.requestAnimationFrame(incrementalWork);
         }

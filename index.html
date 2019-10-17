@@ -5,7 +5,7 @@
     </title>
     <link rel="stylesheet" type="text/css" href="style.css" />
   </head>
-  <body>
+  <body class="first-selection first-split">
     <div id="app" class="column">
       <section id="header">
         <select id="picker">
@@ -13,6 +13,18 @@
       </section>
 
       <section id="editor">
+        <div id="firstSplitMessage" class="message">
+          Select some strokes in this group and then press [3] to turn them into their own group.
+        </div>
+        <div id="firstSelectMessage" class="message">
+          Press [1] to start selecting groups to merge with, or [2] to select strokes in this group to split away.
+        </div>
+        <div id="selectMessage" class="message">
+          Click on a stroke to select it and its group.
+        </div>
+        <div id="breakMessage" class="message">
+          Move the mouse left/right to position the break. Press [4] to confirm.
+        </div>
         <div id="svgContainer">
         </div>
         <div class="column">
@@ -25,8 +37,9 @@
           </div>
 
           <div id="export">
+            <p>Group strokes together that you feel were intended to depict the same intended curve.</p>
             <button id="scap">
-              Export .scap
+              I'm done, save my grouping
             </button>
         </div>
       </section>
