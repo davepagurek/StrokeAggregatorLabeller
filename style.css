@@ -71,6 +71,8 @@ path.selected {
   stroke-width: 3px;
   stroke: #000;
   opacity: 1;
+}
+path.notif {
   animation: selectedNotif 0.6s 1 normal linear;
 }
 

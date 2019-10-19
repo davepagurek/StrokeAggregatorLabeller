@@ -2,6 +2,9 @@ const ns = 'http://www.w3.org/2000/svg'; // needs to be passed in when creating 
 const picker = document.getElementById('picker'); // Used to select inputs
 const svgContainer = document.getElementById('svgContainer');
 
+const undoBtn = document.getElementById('undo');
+const redoBtn = document.getElementById('redo');
+
 // Groups are identified by their colour as a kind of guid
 const chars = '0123456789abcdef';
 const makeSingleColor =
@@ -33,8 +36,24 @@ const tooClose = (aHex, bHex) => {
   return Math.hypot(a.r-b.r, a.g-b.g, a.b-b.b) < 100;
 };
 
+const notify = p => {
+  p.classList.remove('notif');
+  void p.offsetWidth;
+  setTimeout(() => {
+    p.classList.add('notif');
+  }, 100);
+};
+
 let breakIndicator = null;
 let brushIndicator = null;
+
+const undoStack = [];
+const redoStack = [];
+const updateButtons = () => {
+  undoBtn.disabled = undoStack.length <= 1;
+  redoBtn.disabled = redoStack.length == 0;
+};
+const undoKeys = new Set(['groups', 'splits'])
 const state = {
   paths: [], // References to all svg path elements onscreen
   groups: {}, // Path elements indexed by their colour
@@ -49,7 +68,96 @@ const state = {
   radius: 4,
   name: '', // The base name of the file
 
-  setState: newState => {
+  clone: (s) => {
+    const mapObjValues = (obj, fn) => {
+      const newObj = {};
+      for (let key in obj) {
+        if (obj[key] !== undefined) {
+          newObj[key] = fn(obj[key]);
+        } else {
+          newObj[key] = undefined;
+        }
+      }
+      return newObj;
+    };
+    const mapMapValues = (obj, fn) => {
+      const newObj = new Map();
+      [...obj.keys()].forEach(key => {
+        newObj.set(key, fn(obj.get(key)));
+      });
+      return newObj;
+    };
+
+    return {
+      ...s,
+      paths: [...s.paths],
+      groups: mapObjValues(s.groups, group => [...group]),
+      pathSamples: mapMapValues(s.pathSamples, samples => [...samples]),
+      subSelection: [...s.subSelection],
+      splits: mapObjValues(s.splits, split => [...split])
+    };
+  },
+
+  loadState: newState => {
+    handleEscape();
+    const oldPaths = new Set(state.paths);
+    const newPaths = new Set(newState.paths);
+    const removed = new Set([...oldPaths].filter(p => !newPaths.has(p)))
+    const added = new Set([...newPaths].filter(p => !oldPaths.has(p)))
+    console.log(removed);
+    console.log(added);
+    const parent = state.paths[0].parentElement;
+    removed.forEach(p => parent.removeChild(p));
+    added.forEach(p => {
+      parent.prepend(p);
+      p.classList.remove('selected');
+      notify(p);
+    });
+    state.paths = newState.paths;
+
+    state.sampleLocations = newState.sampleLocations;
+    state.pathSamples = newState.pathSamples;
+    if (removed.size > 0) {
+      const eachInTree = (tree, fn) => {
+        if (!tree) return;
+        tree.eq.forEach(s => fn(s));
+        eachInTree(tree.lt, fn);
+        eachInTree(tree.gt, fn);
+      };
+
+      eachInTree(state.sampleLocations, s => {
+        if (removed.has(s.path)) {
+          added.forEach(p => {
+            if (state.pathSamples.get(p).includes(s)) {
+              s.path = p;
+            }
+          });
+        }
+      });
+    }
+
+    state.splits = newState.splits;
+    state.setState({ groups: newState.groups }, true);
+    handleEscape();
+  },
+
+  undo: () => {
+    if (undoStack.length > 1) {
+      redoStack.push(undoStack.pop());
+      state.loadState(state.clone(undoStack[undoStack.length-1]));
+    }
+    updateButtons();
+  },
+
+  redo: () => {
+    if (redoStack.length > 0) {
+      undoStack.push(redoStack.pop());
+      state.loadState(state.clone(undoStack[undoStack.length-1]));
+    }
+    updateButtons();
+  },
+
+  setState: (newState, fromStack = false) => {
     for (let key in newState) {
       if (key === 'paths') {
         // Recreate paths-by-colour index
@@ -94,7 +202,9 @@ const state = {
       } else if (key === 'selection') {
         if (state.selection) {
           // Deselect all elements in the previously selected group
-          state.groups[state.selection].forEach(p => p.classList.remove('selected'));
+          if (state.groups[state.selection]) {
+            state.groups[state.selection].forEach(p => p.classList.remove('selected'));
+          }
         }
         if (newState.selection) {
           // Select the elements in the new group
@@ -107,7 +217,12 @@ const state = {
       } else if (key === 'groups') {
         for (let color in newState.groups) {
           if (newState.groups[color]) {
-            newState.groups[color].forEach(p => p.setAttribute('stroke', color));
+            newState.groups[color].forEach(p => {
+              if (p.getAttribute('stroke') != color) {
+                notify(p);
+                p.setAttribute('stroke', color);
+              }
+            });
 
             // If this group is the selected one, de-select and re-select everything in the group to
             // account for changed paths in the group
@@ -169,6 +284,22 @@ const state = {
 
       state[key] = newState[key];
     }
+
+    if (!fromStack) {
+      const changed = Object.keys(newState).some(k => undoKeys.has(k));
+      if (changed) {
+        state.commit();
+      }
+    }
+  },
+
+  commit: () => {
+    undoStack.push(state.clone(state));
+    while (redoStack.length > 0) redoStack.pop();
+    if (undoStack.length > 10) {
+      undoStack.shift();
+    }
+    updateButtons();
   },
 
   breakStroke: () => {
@@ -195,7 +326,7 @@ const state = {
 
     const pointsStart = points.slice(0, splitIdx+1);
     const pointsEnd = points.slice(splitIdx);
-
+    
     const paths = [pointsStart, pointsEnd].map(polyline => {
       const element = document.createElementNS(ns, 'path');
       element.setAttribute('data-globalId', Math.max(...state.paths.map(p => parseInt(p.getAttribute('data-globalId'))))+1);
@@ -205,27 +336,28 @@ const state = {
       element.setAttribute('stroke', group);
       state.groups[group] = [ element ];
       path.parentElement.insertBefore(element, path);
-      state.paths.push(element);
-      //element.addEventListener('click', pathClickHandler(element));
+      notify(element);
       return element;
     });
 
     state.splits[paths[0].getAttribute('data-globalId')] = [ path.getAttribute('data-globalId'), 0, splitIdx+1 ];
     state.splits[paths[1].getAttribute('data-globalId')] = [ path.getAttribute('data-globalId'), splitIdx, points.length ];
     state.groups[state.getGroup(path)] = state.groups[state.getGroup(path)].filter(p => p != path);
-    state.paths = state.paths.filter(p => p != path);
+    state.paths = state.paths.filter(p => p != path).concat(paths);
     path.parentElement.removeChild(path);
 
     const newPathSamples = [[], []];
     state.pathSamples.get(path).forEach(sample => {
-      const pathIdx = sample.length < splitDist ? 0 : 1;
+      const pathIdx = sample.length - state.pathSamples.get(path)[0].length < splitDist ? 0 : 1;
       sample.path = paths[pathIdx];
       newPathSamples[pathIdx].push(sample);
     });
     [0,1].forEach(pathIdx => state.pathSamples.set(paths[pathIdx], newPathSamples[pathIdx]));
     state.pathSamples.delete(path);
+    console.log(state.paths.length);
 
     state.setState({ selection: null, subSelection: [], split: false, breakAt: null });
+    state.commit();
   },
 
   getGroup: path => path.getAttribute('stroke') || '',
@@ -280,7 +412,7 @@ const generateScap = () => {
   }
 
   return (
-    `#${svg.getAttribute('width')} ${svg.getAttribute('height')}\n` +
+    `#${svg.getAttribute('data-width')} ${svg.getAttribute('data-height')}\n` +
     '@1.5\n' +
     Object.keys(state.groups).filter(g => state.groups[g]).map(group =>
       state.groups[group].map(path => {
@@ -311,10 +443,11 @@ const generateSplits = () => {
   }
 
   return (
+    'ChildID\tParentID\tFromIdx\tToIdx\tGroup\n' +
     Object.keys(state.splits).map(child => {
       const [parent, from, to] = state.splits[child];
       const group = groupIndex[state.getGroup(state.paths.find(p => p.getAttribute('data-globalId') == child))];
-      return `${parent}\t${from}\t${to}\t${group}\n`;
+      return `${child}\t${parent}\t${from}\t${to}\t${group}\n`;
     }).join('')
   )
 };
@@ -352,7 +485,7 @@ const setupLabeller = (name, svg) => {
   svg.addEventListener('mousemove', (event) => handleMouseMove(event));
   svg.addEventListener('click', (event) => {
     const target = handleMouseMove(event);
-    const paths = state.getPathsNear(target, state.radius+1);
+    let paths = state.getPathsNear(target, state.radius+1);
     if (!state.merge && !state.split) {
       let minDist = Infinity;
       let minPath = null;
@@ -371,8 +504,10 @@ const setupLabeller = (name, svg) => {
       }
     } else {
       if (state.merge) {
+        let changed = false;
         paths.forEach(path => {
           if (state.getGroup(path) !== state.selection) {
+            changed = true;
             state.setState({
               groups: {
                 ...state.groups,
@@ -382,11 +517,13 @@ const setupLabeller = (name, svg) => {
                 ],
                 [ state.getGroup(path) ]: undefined
               }
-            });
+            }, true);
           }
         });
+        if (changed) state.commit();
 
       } else if (state.split) {
+        paths = paths.filter(p => state.getGroup(p) === state.selection);
         const allSelected = paths.every(path => state.subSelected(path));
         if (allSelected) {
           state.setState({
@@ -402,8 +539,11 @@ const setupLabeller = (name, svg) => {
   });
 
   // Reset state
-  state.setState({ name, paths });
-  state.setState({ selection: null, merge: false, split: false, subSelection: [], breakAt: null, splits: {} });
+  while (undoStack.length > 0) undoStack.pop();
+  while (redoStack.length > 0) redoStack.pop();
+  state.setState({ name, paths }, true);
+  state.setState({ selection: null, merge: false, split: false, subSelection: [], breakAt: null, splits: {} }, true);
+  state.commit();
 
   // Add click handlers on each new path element
   //paths.forEach(path => {
@@ -428,8 +568,8 @@ const handleSplit = () => {
 
 const handleConfirm = () => {
   if (!document.body.classList.contains('selection')) return;
-  document.body.classList.remove('first-split');
   if (state.split && state.subSelection.length > 0) {
+    document.body.classList.remove('first-split');
     const oldSelection = state.selection;
     state.setState({ selection: null });
 
@@ -469,7 +609,7 @@ const handleConfirm = () => {
 
 const handleBreak = () => {
   if (!document.body.classList.contains('selection')) return;
-  if (event.key === '4') {
+  if (state.split && state.subSelection.length === 1) {
     if (state.breakAt === null) {
       state.setState({ breakAt: 0.5 });
     } else {
@@ -492,7 +632,7 @@ const handleEscape = () => {
 };
 
 // Add keyboard handling
-document.addEventListener('keyup', (event) => {
+document.addEventListener('keydown', (event) => {
   if (event.key === '1') {
     handleMerge();
   } else if (event.key === '2') {
@@ -503,8 +643,18 @@ document.addEventListener('keyup', (event) => {
     handleBreak();
   } else if (event.key === 'Escape') {
     handleEscape();
+  } else if ((event.metaKey || event.ctrlKey) && event.key === 'z' && !event.shiftKey) {
+    event.preventDefault();
+    event.stopPropagation();
+    state.undo();
+  } else if ((event.metaKey || event.ctrlKey) && ((event.shiftKey && (event.key === 'z' || event.key === 'Z')) || event.key === 'y')) {
+    event.preventDefault();
+    event.stopPropagation();
+    state.redo();
   }
 });
+undoBtn.addEventListener('click', () => state.undo());
+redoBtn.addEventListener('click', () => state.redo());
 document.getElementById('merge').addEventListener('click', handleMerge);
 document.getElementById('split').addEventListener('click', handleSplit);
 document.getElementById('confirm').addEventListener('click', handleConfirm);
@@ -617,6 +767,8 @@ const scapToSVG = function*(scap) {
 
   const svg = document.createElementNS(ns, 'svg');
   svg.setAttribute('viewBox', `0 0 ${w} ${h}`);
+  svg.setAttribute('data-width', w);
+  svg.setAttribute('data-height', h);
 
   for (let group in groups) {
     groups[group].forEach(({ globalId, polyline }) => {
@@ -641,7 +793,7 @@ const loadInput = () => {
 
   while (svgContainer.firstChild) svgContainer.removeChild(svgContainer.firstChild);
   const loader = document.createElement('h2');
-  loader.innerText = "Processing...";
+  loader.innerText = 'Processing...';
   svgContainer.appendChild(loader);
 
   //fetch(`data/${name}_t_m_result_cluster.svg`)
