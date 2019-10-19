@@ -327,12 +327,14 @@ const state = {
     const pointsStart = points.slice(0, splitIdx+1);
     const pointsEnd = points.slice(splitIdx);
     
+    const newGroupColors = [];
     const paths = [pointsStart, pointsEnd].map(polyline => {
       const element = document.createElementNS(ns, 'path');
       element.setAttribute('data-globalId', Math.max(...state.paths.map(p => parseInt(p.getAttribute('data-globalId'))))+1);
       element.setAttribute('d', `M ${polyline[0][0].toPrecision(6)} ${polyline[0][1].toPrecision(6)} ` +
         polyline.slice(1).map(([x,y]) => `L ${x.toPrecision(6)} ${y.toPrecision(6)}`).join(' '));
-      const group = state.newGroup([state.getGroup(path)]);
+      const group = state.newGroup([state.getGroup(path), ...newGroupColors]);
+      newGroupColors.push(group);
       element.setAttribute('stroke', group);
       state.groups[group] = [ element ];
       path.parentElement.insertBefore(element, path);
