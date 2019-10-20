@@ -2,6 +2,8 @@ const ns = 'http://www.w3.org/2000/svg'; // needs to be passed in when creating 
 const picker = document.getElementById('picker'); // Used to select inputs
 const svgContainer = document.getElementById('svgContainer');
 
+let startTime = null;
+
 const undoBtn = document.getElementById('undo');
 const redoBtn = document.getElementById('redo');
 
@@ -455,6 +457,7 @@ const generateSplits = () => {
 };
 
 const setupLabeller = (name, svg) => {
+  startTime = new Date();
   paths = [ ...svg.querySelectorAll('path') ];
 
   breakIndicator = document.createElementNS(ns, 'ellipse');
@@ -681,8 +684,10 @@ const download = (content, filename) => {
 };
 
 document.getElementById('scap').addEventListener('click', () => {
-  download(generateScap(),  `${state.name}_cleaned.scap`);
-  download(generateSplits(),  `${state.name}_cleaned.split`);
+  const [prefix, suffix] = state.name.split('.');
+  const duration = Math.round((new Date().getTime() - startTime.getTime())/1000);
+  download(generateScap(),  `${prefix}_${duration}s_cleaned.scap`);
+  download(generateSplits(),  `${prefix}_${duration}s_cleaned.split`);
 });
 
 const scapToSVG = function*(scap) {
