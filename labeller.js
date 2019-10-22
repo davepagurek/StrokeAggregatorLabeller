@@ -1,6 +1,7 @@
 const ns = 'http://www.w3.org/2000/svg'; // needs to be passed in when creating SVG elements
 const picker = document.getElementById('picker'); // Used to select inputs
 const svgContainer = document.getElementById('svgContainer');
+const reference = document.getElementById('reference');
 
 let startTime = null;
 
@@ -822,9 +823,10 @@ const loadInput = () => {
   }
 
   while (svgContainer.firstChild) svgContainer.removeChild(svgContainer.firstChild);
+  while (reference.firstChild) reference.removeChild(reference.firstChild);
   const loader = document.createElement('h2');
   loader.innerText = 'Processing...';
-  svgContainer.appendChild(loader);
+  reference.appendChild(loader);
 
   //fetch(`data/${name}_t_m_result_cluster.svg`)
   fetch(name)
@@ -848,13 +850,24 @@ const loadInput = () => {
 
         if (result) {
           while (svgContainer.firstChild) svgContainer.removeChild(svgContainer.firstChild);
+          while (reference.firstChild) reference.removeChild(reference.firstChild);
+
           svgContainer.appendChild(result);
+          svgContainer.classList.add('init');
+          const initBtn = document.createElement('button');
+          initBtn.innerText = 'I\'m ready to start labelling';
+          initBtn.addEventListener('click', () => {
+            if (first) {
+              document.body.classList.add('unselected');
+              first = false;
+            }
+            svgContainer.classList.remove('init');
+            setupLabeller(name, svgContainer.querySelector('svg'));
+          });
+          svgContainer.appendChild(initBtn);
+
+          reference.appendChild(result.cloneNode(true));
           //svgContainer.innerHTML = src;
-          setupLabeller(name, svgContainer.querySelector('svg'));
-          if (first) {
-            document.body.classList.add('unselected');
-            first = false;
-          }
         } else {
           window.requestAnimationFrame(incrementalWork);
         }

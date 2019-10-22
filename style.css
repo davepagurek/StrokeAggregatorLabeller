@@ -40,13 +40,11 @@
   opacity: 0;
   position: absolute;
   left: 0;
-  bottom: 0;
+  bottom: -5px;
   right: 0;
   text-align: center;
-  -moz-text-shadow: 0 0 8px #FFF;
-  text-shadow: 0 0 8px #FFF;
   font-size: 1.1em;
-  padding: 20px;
+  padding: 10px;
   pointer-events: none;
   transform: translateY(-20px);
   transition: transform cubic-bezier(0,1.5,0.5,1) 0.6s; opacity linear 0.2s;
@@ -61,39 +59,62 @@
   transform: translateY(0);
 }
 
-path {
+#reference path {
+  fill: none;
+  stroke: #000;
+}
+#reference svg {
+  width: 100%;
+  height: 100%;
+}
+
+#svgContainer button {
+  display: none;
+}
+#svgContainer.init button {
+  display: inline-block;
+}
+#svgContainer.init svg {
+  display: none;
+}
+#svgContainer.init {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+#svgContainer path {
   opacity: 1;
   cursor: pointer;
   transition: all linear 0.2s;
   fill: none;
 }
-path.selected {
+#svgContainer path.selected {
   stroke-width: 3px;
   stroke: #F0F;
   opacity: 1;
 }
-path.notif {
+#svgContainer path.notif {
   animation: selectedNotif 0.6s 1 normal linear;
 }
 
-.merge path.selected {
+.merge #svgContainer path.selected {
   pointer-events: none;
   opacity: 0.2;
   /*animation: selectedNotif 0.6s 1 normal linear, pulse 4s infinite normal linear;*/
 }
 
-.split path {
+.split #svgContainer path {
   opacity: 0.1;
   pointer-events: none;
 }
-.split path.selected {
+.split #svgContainer path.selected {
   opacity: 0.2;
   pointer-events: auto;
 }
-.split path.selected:hover {
+.split #svgContainer path.selected:hover {
   opacity: 1;
 }
-.split path.selected.subSelection {
+.split #svgContainer path.selected.subSelection {
   opacity: 1;
   stroke: #F00 !important;
 }
@@ -144,9 +165,19 @@ section {
   position: relative;
   overflow: hidden;
 }
+#reference {
+  overflow-x: hidden;
+  flex: 2;
+  align-self: stretch;
+  display: flex;
+  position: relative;
+}
+#reference svg path {
+  stroke: #000 !important;
+}
 #svgContainer {
   overflow-x: auto;
-  flex: 1;
+  flex: 3;
   align-self: stretch;
   display: flex;
   position: relative;

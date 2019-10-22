@@ -1,5 +1,5 @@
 const inputs = [
-"data/BowTie01_c_1_u_1_h_t_result_angle.scap",
+"data/BowTie01_tutorial.scap",
 "data/02sketch_t_m_result_cluster.scap",
 "data/03sketch_t_m_result_cluster.scap",
 "data/04sketch_t_m_result_cluster.scap",
