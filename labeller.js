@@ -707,12 +707,14 @@ const download = (content, filename) => {
   document.body.removeChild(downloadLink);
 };
 
-document.getElementById('scap').addEventListener('click', () => {
-  const [prefix, suffix] = state.name.split('.');
+const downloadFiles = (start = '') => {
+  const [prefix, suffix] = state.name.replace('data/','').split('.');
   const duration = Math.round((new Date().getTime() - startTime.getTime())/1000);
-  download(generateScap(),  `${prefix}_${duration}s_cleaned.scap`);
-  download(generateSplits(),  `${prefix}_${duration}s_cleaned.split`);
-});
+  download(generateScap(),  `${start}${prefix}_${duration}s_cleaned.scap`);
+  download(generateSplits(),  `${start}${prefix}_${duration}s_cleaned.split`);
+};
+document.getElementById('done').addEventListener('click', () => downloadFiles());
+document.getElementById('incomplete').addEventListener('click', () => downloadFiles('INCOMPLETE_'));
 
 const scapToSVG = function*(scap) {
   const tokens = scap.split(/\s+/m);
