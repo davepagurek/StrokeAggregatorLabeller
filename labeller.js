@@ -489,8 +489,8 @@ const setupLabeller = (name, svg) => {
   };
   svg.addEventListener('mousemove', (event) => {
     const target = handleMouseMove(event);
-    const totalLength = state.subSelection[0].getTotalLength();
     if (state.breakAt !== null) {
+      const totalLength = state.subSelection[0].getTotalLength();
       let range = [0, 1];
       while (range[1]-range[0] > 0.001) {
         let subdivided = [];
