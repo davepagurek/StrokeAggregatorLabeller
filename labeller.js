@@ -630,7 +630,7 @@ const handleConfirm = () => {
     }
 
     state.setState({
-      split: false,
+      selection: oldSelection,
       groups: {
         ...state.groups,
         [ oldSelection ]: state.getGroupMembers(oldSelection).filter(p => !state.subSelected(p)),
