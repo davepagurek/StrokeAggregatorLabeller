@@ -181,17 +181,18 @@ button:hover {
 }
 #reference {
   overflow-x: hidden;
-  flex: 2;
+  flex: 3;
   align-self: stretch;
   display: flex;
   position: relative;
+  margin-right: 10px;
 }
 #reference svg path {
   stroke: #000 !important;
 }
 #svgContainer {
   overflow-x: auto;
-  flex: 3;
+  flex: 7;
   align-self: stretch;
   display: flex;
   position: relative;
