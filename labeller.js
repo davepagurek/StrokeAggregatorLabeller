@@ -67,7 +67,7 @@ const state = {
   breakAt: null,
   splits: {},
   subSelection: [], // In split mode, the individual path elements that are set to become their own group
-  radius: 4,
+  radius: 10,
   name: '', // The base name of the file
 
   clone: (s) => {
@@ -487,7 +487,36 @@ const setupLabeller = (name, svg) => {
     brushIndicator.setAttribute('cy', svgLoc.y);
     return svgLoc;
   };
-  svg.addEventListener('mousemove', (event) => handleMouseMove(event));
+  svg.addEventListener('mousemove', (event) => {
+    const target = handleMouseMove(event);
+    const totalLength = state.subSelection[0].getTotalLength();
+    if (state.breakAt !== null) {
+      let range = [0, 1];
+      while (range[1]-range[0] > 0.001) {
+        let subdivided = [];
+        for (let i = 0; i <= 1; i += 0.1) {
+          subdivided.push(range[0] + i*(range[1]-range[0]));
+        }
+
+        let closest = null;
+        let closestDist = Infinity;
+        subdivided.forEach(t => {
+          const sample = state.subSelection[0].getPointAtLength(t*totalLength);
+          const dist = Math.hypot(sample.x-target.x, sample.y-target.y);
+          if (dist < closestDist) {
+            closestDist = dist;
+            closest = t;
+          }
+        });
+
+        if (closest === null) break;
+        const r = (range[1]-range[0])/2;
+        range[0] = closest - r/2;
+        range[1] = closest + r/2;
+      }
+      state.setState({ breakAt: (range[1]+range[0])/2 });
+    }
+  });
   svg.addEventListener('click', (event) => {
     const target = handleMouseMove(event);
     let paths = state.getPathsNear(target, state.radius+1);
@@ -614,6 +643,7 @@ const handleConfirm = () => {
 
 const handleBreak = () => {
   if (!document.body.classList.contains('selection')) return;
+  document.body.classList.remove('first-split');
   if (state.split && state.subSelection.length === 1) {
     if (state.breakAt === null) {
       state.setState({ breakAt: 0.5 });
@@ -665,13 +695,6 @@ document.getElementById('split').addEventListener('click', handleSplit);
 document.getElementById('confirm').addEventListener('click', handleConfirm);
 document.getElementById('break').addEventListener('click', handleBreak);
 document.getElementById('escape').addEventListener('click', handleEscape);
-
-document.addEventListener('mousemove', (event) => {
-  if (state.breakAt !== null) {
-    const breakAt = Math.min(1, Math.max(0, event.clientX / document.body.clientWidth));
-    state.setState({ breakAt });
-  }
-});
 
 const download = (content, filename) => {
   const downloadLink = document.createElement('a');

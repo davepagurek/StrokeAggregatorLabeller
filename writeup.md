@@ -52,7 +52,7 @@ With a sub-selection made, press the 3 key to finalize the split and turn the su
 
 #### 3.2.2 Breaking a Stroke
 
-If a sub-selection contains only one stroke, press the 4 key to break the stroke into two strokes. A red dot will appear on the stroke showing where the break will happen. Move the mouse left and right to change the position of the break point. Pressing the 4 key a second time confirms the break, creating two strokes out of the sub-selection, each one in its own new group.
+If a sub-selection contains only one stroke, press the 4 key to break the stroke into two strokes. A red dot will appear on the stroke showing where the break will happen. Move the mouse to change the position of the break point to the point on the stroke closest to the mouse. Pressing the 4 key a second time confirms the break, creating two strokes out of the sub-selection, each one in its own new group.
 
 ![Breaking a single stroke into two, starting with a sub-selection of one stroke (shown in red)](img/break.png)
 
