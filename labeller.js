@@ -3,7 +3,7 @@ const picker = document.getElementById('picker'); // Used to select inputs
 const svgContainer = document.getElementById('svgContainer');
 const reference = document.getElementById('reference');
 
-const COUNTDOWN_LENGTH = 1;
+const COUNTDOWN_LENGTH = 8;
 let startTime = null;
 let zoom = 1;
 
@@ -70,7 +70,7 @@ const state = {
   breakAt: null,
   splits: {},
   subSelection: [], // In split mode, the individual path elements that are set to become their own group
-  radius: 10,
+  radius: 5,
   name: '', // The base name of the file
 
   clone: (s) => {
@@ -695,13 +695,13 @@ const zoomOut = () => {
 
 // Add keyboard handling
 document.addEventListener('keydown', (event) => {
-  if (event.key === '1') {
+  if (event.key === '1' || event.key === 'm') {
     handleMerge();
-  } else if (event.key === '2') {
+  } else if (event.key === '2' || event.key === 'b') {
     handleSplit();
-  } else if (event.key === '3') {
+  } else if (event.key === '3' || event.key === 's') {
     handleConfirm();
-  } else if (event.key === '4') {
+  } else if (event.key === '4' || event.key === 'k') {
     handleBreak();
   } else if (event.key === 'Escape') {
     handleEscape();
