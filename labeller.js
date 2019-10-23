@@ -3,7 +3,9 @@ const picker = document.getElementById('picker'); // Used to select inputs
 const svgContainer = document.getElementById('svgContainer');
 const reference = document.getElementById('reference');
 
+const COUNTDOWN_LENGTH = 1;
 let startTime = null;
+let zoom = 1;
 
 const undoBtn = document.getElementById('undo');
 const redoBtn = document.getElementById('redo');
@@ -102,7 +104,6 @@ const state = {
   },
 
   loadState: newState => {
-    handleEscape();
     const oldPaths = new Set(state.paths);
     const newPaths = new Set(newState.paths);
     const removed = new Set([...oldPaths].filter(p => !newPaths.has(p)))
@@ -140,8 +141,16 @@ const state = {
     }
 
     state.splits = newState.splits;
+    if (state.breakAt) {
+      handleEscape();
+    }
+    if (state.selection && !newState.groups[state.selection]) {
+      handleEscape();
+    }
+    if (state.subSelection && state.subSelection.some(p => !newState.groups[state.selection].includes(p))) {
+      handleEscape();
+    }
     state.setState({ groups: newState.groups }, true);
-    handleEscape();
   },
 
   undo: () => {
@@ -407,7 +416,7 @@ const state = {
 
 // Converts current state to a .scap file
 const generateScap = () => {
-  const svg = document.querySelector('svg');
+  const svg = document.querySelector('#svgContainer svg');
 
   let nextGroup = 0;
   const groupIndex = {};
@@ -667,6 +676,23 @@ const handleEscape = () => {
   });
 };
 
+const zoomIn = () => {
+  const svg = document.querySelector('#svgContainer svg');
+  zoom++;
+  svg.setAttribute('width', svg.clientWidth*2);
+};
+
+const zoomOut = () => {
+  const svg = document.querySelector('#svgContainer svg');
+  if (zoom == 1) return;
+  zoom--;
+  if (zoom == 1) {
+    svg.removeAttribute('width');
+  } else {
+    svg.setAttribute('width', Math.round(svg.clientWidth/2));
+  }
+};
+
 // Add keyboard handling
 document.addEventListener('keydown', (event) => {
   if (event.key === '1') {
@@ -687,6 +713,14 @@ document.addEventListener('keydown', (event) => {
     event.preventDefault();
     event.stopPropagation();
     state.redo();
+  } else if ((event.metaKey || event.ctrlKey) && event.key === '=') {
+    event.preventDefault();
+    event.stopPropagation();
+    zoomIn();
+  } else if ((event.metaKey || event.ctrlKey) && event.key === '-') {
+    event.preventDefault();
+    event.stopPropagation();
+    zoomOut();
   }
 });
 undoBtn.addEventListener('click', () => state.undo());
@@ -856,7 +890,7 @@ const loadInput = () => {
 
           svgContainer.appendChild(result);
           svgContainer.classList.add('init');
-          let timer = 10;
+          let timer = COUNTDOWN_LENGTH;
           const initBtn = document.createElement('button');
           initBtn.disabled = true;
           const vizTimer = () => {
@@ -878,7 +912,7 @@ const loadInput = () => {
                     first = false;
                   }
                   svgContainer.classList.remove('init');
-                  setupLabeller(name, svgContainer.querySelector('svg'));
+                  setupLabeller(name, svgContainer.querySelector('#svgContainer svg'));
                 });
               } else {
                 setNextTimer();
