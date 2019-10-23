@@ -856,17 +856,39 @@ const loadInput = () => {
 
           svgContainer.appendChild(result);
           svgContainer.classList.add('init');
+          let timer = 10;
           const initBtn = document.createElement('button');
-          initBtn.innerText = 'I\'m ready to start labelling';
-          initBtn.addEventListener('click', () => {
-            if (first) {
-              document.body.classList.add('unselected');
-              first = false;
+          initBtn.disabled = true;
+          const vizTimer = () => {
+            if (timer > 0) {
+              initBtn.innerText = timer;
+            } else {
+              initBtn.innerText = 'I\'m ready to start labelling';
+              initBtn.disabled = false;
             }
-            svgContainer.classList.remove('init');
-            setupLabeller(name, svgContainer.querySelector('svg'));
-          });
+          };
+          const setNextTimer = () => {
+            setTimeout(() => {
+              vizTimer();
+              timer--;
+              if (timer < 0) {
+                initBtn.addEventListener('click', () => {
+                  if (first) {
+                    document.body.classList.add('unselected');
+                    first = false;
+                  }
+                  svgContainer.classList.remove('init');
+                  setupLabeller(name, svgContainer.querySelector('svg'));
+                });
+              } else {
+                setNextTimer();
+              }
+            }, 1000);
+          };
           svgContainer.appendChild(initBtn);
+          vizTimer();
+          timer--;
+          setNextTimer();
 
           reference.appendChild(result.cloneNode(true));
           //svgContainer.innerHTML = src;

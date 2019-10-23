@@ -168,6 +168,13 @@ button {
 button:hover {
   box-shadow: 0 2px 5px rgba(0,0,0,0.4);
 }
+button[disabled] {
+  opacity: 0.8;
+  cursor:default;
+}
+button[disabled]:hover {
+  box-shadow: none;
+}
 #header {
   background-color: #EEE;
 }
