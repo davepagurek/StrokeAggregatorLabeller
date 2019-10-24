@@ -4,6 +4,7 @@ const svgContainer = document.getElementById('svgContainer');
 const reference = document.getElementById('reference');
 
 const COUNTDOWN_LENGTH = 1; // 20
+const HIGHLIGHT_TIME = 800;
 let startTime = null;
 let zoom = 1;
 
@@ -368,6 +369,44 @@ const generateScap = () => {
   );
 };
 
+let animationTimer = null;
+const animateGroups = () => {
+  const svg = document.querySelector('#svgContainer svg');
+  if (!svg) return;
+
+  handleEscape();
+
+  // Make our own copy of groups
+  const groups = {};
+  Object.keys(state.groups).forEach(group => {
+    if (state.groups[group] && state.groups[group].length > 0) {
+      groups[group] = [...state.groups[group]];
+    }
+  });
+  const remaining = Object.keys(groups);
+
+  const highlightNext = () => {
+    const group = remaining.pop();
+    [...svg.querySelectorAll('.highlighted')].forEach(p => p.classList.remove('highlighted'));
+    groups[group].forEach(p => p.classList.add('highlighted'));
+  };
+
+  const timerCallback = () => {
+    document.body.classList.add('highlighting');
+    highlightNext();
+
+    if (remaining.length > 0) {
+      animationTimer = setTimeout(timerCallback, HIGHLIGHT_TIME);
+    } else {
+      animationTimer = setTimeout(() => {
+        document.body.classList.remove('highlighting');
+        [...svg.querySelectorAll('.highlighted')].forEach(p => p.classList.remove('highlighted'));
+      }, HIGHLIGHT_TIME);
+    }
+  };
+  timerCallback();
+};
+
 const setupLabeller = (name, svg) => {
   startTime = new Date();
   document.body.classList.remove('timer');
@@ -519,6 +558,11 @@ const handleConfirm = () => {
 };
 
 const handleEscape = () => {
+  if (animationTimer !== null) {
+    clearTimeout(animationTimer);
+    document.body.classList.remove('highlighting');
+    [...document.querySelectorAll('.highlighted')].forEach(p => p.classList.remove('highlighted'));
+  }
   if (!document.body.classList.contains('selection')) return;
   if (state.selection) document.body.classList.remove('first-selection');
   if (state.subSelection.length > 0) document.body.classList.remove('first-split');
@@ -532,12 +576,14 @@ const handleEscape = () => {
 
 const zoomIn = () => {
   const svg = document.querySelector('#svgContainer svg');
+  if (!svg) return;
   zoom++;
   svg.setAttribute('width', svg.clientWidth*2);
 };
 
 const zoomOut = () => {
   const svg = document.querySelector('#svgContainer svg');
+  if (!svg) return;
   if (zoom == 1) return;
   zoom--;
   if (zoom == 1) {
@@ -577,6 +623,7 @@ document.addEventListener('keydown', (event) => {
 });
 undoBtn.addEventListener('click', () => state.undo());
 redoBtn.addEventListener('click', () => state.redo());
+document.getElementById('animate').addEventListener('click', animateGroups);
 document.getElementById('merge').addEventListener('click', handleMerge);
 document.getElementById('split').addEventListener('click', handleSplit);
 document.getElementById('confirm').addEventListener('click', handleConfirm);

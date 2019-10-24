@@ -5,7 +5,7 @@
   opacity: 0.2;
   cursor: default;
 }
-.selection #merge, .selection #split, .selection #escape {
+.selection #merge, .selection #split, .selection #escape, .highlighting #escape {
   opacity: 1;
   cursor: pointer;
 }
@@ -130,6 +130,14 @@
   opacity: 1;
   stroke: #F00 !important;
 }
+.highlighting #svgContainer path {
+  opacity: 0.3;
+}
+.highlighting #svgContainer path.highlighted {
+  stroke: #0FF !important;
+  stroke-width: 3px;
+  opacity: 1;
+}
 
 html, body {
   padding: 0;
@@ -205,6 +213,9 @@ button[disabled]:hover {
   position: relative;
   margin-right: 10px;
   overflow: auto;
+}
+#reference svg {
+  margin: auto;
 }
 .timer #reference {
   flex: 14;
