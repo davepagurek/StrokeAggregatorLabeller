@@ -370,6 +370,7 @@ const generateScap = () => {
 
 const setupLabeller = (name, svg) => {
   startTime = new Date();
+  document.body.classList.remove('timer');
   paths = [ ...svg.querySelectorAll('path') ];
 
   brushIndicator = document.createElementNS(ns, 'ellipse');
@@ -742,6 +743,7 @@ const loadInput = () => {
           let timer = COUNTDOWN_LENGTH;
           const initBtn = document.createElement('button');
           initBtn.disabled = true;
+          document.body.classList.add('timer');
           const vizTimer = () => {
             if (timer > 0) {
               initBtn.innerText = timer;
@@ -773,7 +775,10 @@ const loadInput = () => {
           timer--;
           setNextTimer();
 
-          reference.appendChild(result.cloneNode(true));
+          refSVG = result.cloneNode(true);
+          refSVG.setAttribute('width', refSVG.getAttribute('data-width'));
+          refSVG.setAttribute('height', refSVG.getAttribute('data-height'));
+          reference.appendChild(refSVG);
           //svgContainer.innerHTML = src;
         } else {
           window.requestAnimationFrame(incrementalWork);
