@@ -1,9 +1,10 @@
 const ns = 'http://www.w3.org/2000/svg'; // needs to be passed in when creating SVG elements
-const picker = document.getElementById('picker'); // Used to select inputs
 const svgContainer = document.getElementById('svgContainer');
 const reference = document.getElementById('reference');
+const sequence = (window.location.hash && sequences[window.location.hash.slice(1)]) || sequences[Object.keys(sequences)[0]];
+const next = document.getElementById('next');
 
-const COUNTDOWN_LENGTH = 1; // 20
+const COUNTDOWN_LENGTH = 20;
 const HIGHLIGHT_TIME = 800;
 let startTime = null;
 let zoom = 1;
@@ -637,6 +638,7 @@ const download = (content, filename) => {
   document.body.appendChild(downloadLink);
   downloadLink.click();
   document.body.removeChild(downloadLink);
+  next.disabled = false;
 };
 
 const downloadFiles = (start = '') => {
@@ -750,11 +752,12 @@ const scapToSVG = function*(scap) {
 
 let first = true;
 const loadInput = () => {
-  const name = picker.value;
+  const name = sequence[0];
   if (!name) {
     return;
   }
 
+  next.disabled = true;
   while (svgContainer.firstChild) svgContainer.removeChild(svgContainer.firstChild);
   while (reference.firstChild) reference.removeChild(reference.firstChild);
   const loader = document.createElement('h2');
@@ -848,16 +851,27 @@ radiusSelect.addEventListener('change', () => {
   state.setState({ radius: parseInt(radiusSelect.value) });
 });
 
-picker.addEventListener('change', loadInput);
 
-inputs.forEach((name, i) => {
-  const option = document.createElement('option');
-  option.innerText = name;
-  option.value = name;
-  picker.appendChild(option);
-
-  if (i === 0) {
-    option.selected = true;
-    loadInput();
+next.addEventListener('click', () => {
+  if (!next.disabled) {
+    sequence.shift();
+    if (sequence.length > 0) {
+      loadInput();
+    } else {
+      document.body.classList.add('finished');
+    }
   }
 });
+loadInput();
+//sequence.forEach((name, i) => {
+  //const option = document.createElement('option');
+  //option.innerText = name;
+  //option.value = name;
+  //picker.appendChild(option);
+
+  //if (i === 0) {
+    //option.selected = true;
+    //loadInput();
+  //}
+//});
+//picker.addEventListener('change', loadInput);

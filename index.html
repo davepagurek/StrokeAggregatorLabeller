@@ -6,10 +6,16 @@
     <link rel="stylesheet" type="text/css" href="style.css" />
   </head>
   <body class="first-selection first-split">
+    <div id="finished">
+      <p>
+        Thanks for your help!
+        <br />
+        Please send your downloaded grouping files to <a href="mailto:chenxil@cs.ubc.ca">chenxil@cs.ubc.ca</a>.
+      </p>
+    </div>
     <div id="app" class="column">
       <section id="header">
-        <select id="picker">
-        </select>
+        <!--<select id="picker"></select>-->
         <label>Selection radius:</label>
         <select id="radius">
         </select>
@@ -52,6 +58,9 @@
             </button>
             <button id="incomplete">
               I need to stop, save<br />my incomplete groupings
+            </button>
+            <button disabled id="next">
+              Next sketch
             </button>
         </div>
       </section>
