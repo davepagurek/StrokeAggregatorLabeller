@@ -9,6 +9,8 @@ const HIGHLIGHT_TIME = 800;
 let startTime = null;
 let zoom = 1;
 
+const downloads = {};
+
 const undoBtn = document.getElementById('undo');
 const redoBtn = document.getElementById('redo');
 
@@ -629,10 +631,14 @@ document.getElementById('merge').addEventListener('click', handleMerge);
 document.getElementById('split').addEventListener('click', handleSplit);
 document.getElementById('confirm').addEventListener('click', handleConfirm);
 document.getElementById('escape').addEventListener('click', handleEscape);
+document.getElementById('redownload').addEventListener('click', () => {
+  Object.keys(downloads).forEach(filename => download(downloads[filename], filename));
+});
 
 const download = (content, filename) => {
   const downloadLink = document.createElement('a');
   const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
+  if (!downloads[filename]) downloads[filename] = blob;
   downloadLink.setAttribute('href', URL.createObjectURL(blob));
   downloadLink.setAttribute('download', filename);
   document.body.appendChild(downloadLink);
@@ -647,7 +653,10 @@ const downloadFiles = (start = '') => {
   download(generateScap(),  `${start}${prefix}_${duration}s_cleaned.scap`);
 };
 document.getElementById('done').addEventListener('click', () => downloadFiles());
-document.getElementById('incomplete').addEventListener('click', () => downloadFiles('INCOMPLETE_'));
+document.getElementById('incomplete').addEventListener('click', () => {
+  downloadFiles('INCOMPLETE_');
+  document.body.classList.add('finished');
+});
 
 const scapToSVG = function*(scap) {
   const tokens = scap.split(/\s+/m);
