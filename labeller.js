@@ -654,8 +654,10 @@ const downloadFiles = (start = '') => {
 };
 document.getElementById('done').addEventListener('click', () => downloadFiles());
 document.getElementById('incomplete').addEventListener('click', () => {
-  downloadFiles('INCOMPLETE_');
-  document.body.classList.add('finished');
+  if (confirm('Ending early will skip all remaining drawings.')) {
+    downloadFiles('INCOMPLETE_');
+    document.body.classList.add('finished');
+  }
 });
 
 const scapToSVG = function*(scap) {
