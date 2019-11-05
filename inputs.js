@@ -2,7 +2,7 @@ const sequences = {
   "1": [
     "data/BowTie01_tutorial.scap",
     "data/Professional1_mixer_view2_presentation_t_m_result_cluster.scap",
-    "data/Professional3_potato_chip_view1_concept_t_m_result_cluster.scap",
+    "data/Professional3_potato_chip_view1_presentation_t_m_result_cluster.scap",
     "data/Professional1_hairdryer_view1_concept_t_m_result_cluster.scap",
     "data/hand1_t_m_result_cluster.scap",
   ],
@@ -17,6 +17,7 @@ const sequences = {
     "data/BowTie01_tutorial.scap",
     "data/06sketch_t_m_result_cluster.scap",
     "data/11sketch_t_m_result_cluster.scap",
+    "data/hamstertoon_t_m_result_cluster.scap",
     "data/student3_house_view1_concept_t_m_result_cluster.scap",
   ],
   "4": [
