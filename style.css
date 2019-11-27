@@ -24,14 +24,19 @@ a {
   justify-content: center;
 }
 
-#modes {
-  padding: 10px;
+.row {
+  margin-bottom: 10px;
+  text-align: center;
 }
-#modes p {
-  font-size: 1.5em;
+
+#modes {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
 }
 #merge, #split, #confirm, #break, #escape {
-  opacity: 0.2;
+  opacity: 0.4;
   cursor: default;
 }
 .selection #merge, .selection #split, .selection #escape, .highlighting #escape {
@@ -39,15 +44,15 @@ a {
   cursor: pointer;
 }
 .merge.selection #split, .merge.selection #confirm, .merge.selection #merge {
-  opacity: 0.2;
+  opacity: 0.4;
   cursor: default;
 }
 .split.selection #merge, .split.selection #split, .split.selection #break {
-  opacity: 0.2;
+  opacity: 0.4;
   cursor: default;
 }
 .selection #confirm {
-  opacity: 0.2;
+  opacity: 0.4;
   cursor: default;
 }
 .split.selection.subselection #confirm, .split.selection.subselection.single #break {
@@ -55,7 +60,7 @@ a {
   cursor: pointer;
 }
 .split.selection.subselection.breaking #confirm {
-  opacity: 0.2;
+  opacity: 0.4;
   cursor: default;
 }
 
@@ -196,29 +201,31 @@ section {
   justify-content: center;
   align-items: center;
 }
-#export p {
-  max-width: 200px;
-  padding: 10px;
-}
-#export button {
-  margin: 5px 30px;
-}
 button {
   margin: 0 5px;
   display: inline-block;
   border-radius: 4px;
   border: 0;
+  box-sizing: border-box;
   background-color: #DDD;
   color: #000;
   padding: 5px 15px;
   cursor: pointer;
   transition: all ease 0.3s;
 }
+#sidebar button {
+  width: 200px;
+  margin: 5px 30px;
+}
+#sidebar #tools button {
+  width: 80px;
+  margin: 5px 5px;
+}
 button:hover {
   box-shadow: 0 2px 5px rgba(0,0,0,0.4);
 }
 button[disabled] {
-  opacity: 0.8;
+  opacity: 0.4;
   cursor:default;
 }
 button[disabled]:hover {
@@ -233,8 +240,8 @@ button#next:not([disabled]) {
 #header {
   background-color: #EEE;
 }
-#header label {
-  margin-left: 20px;
+#header p {
+  margin: 5px;
 }
 #editor {
   flex: 1;

@@ -18,13 +18,7 @@
     </div>
     <div id="app" class="column">
       <section id="header">
-        <!--<select id="picker"></select>-->
-        <label>Selection radius:</label>
-        <select id="radius">
-        </select>
-        <label></label>
-        <button disabled id="undo">Undo</button>
-        <button disabled id="redo">Redo</button>
+        <p>Group strokes together that you feel were intended to depict the same intended curve.</p>
       </section>
 
       <section id="editor">
@@ -44,17 +38,28 @@
         </div>
         <div id="svgContainer">
         </div>
-        <div class="column">
-          <div id="modes">
-            <p id="merge">[M] Merge</p>
-            <p id="split">[B] Begin Split</p>
-            <p id="confirm">[S] Split from group</p>
-            <p id="escape"> [Esc] Exit current mode</p>
+        <div class="column" id="sidebar">
+          <div id="tools">
+            <!--<select id="picker"></select>-->
+            <div class="row">
+              <label>Selection radius:</label>
+              <select id="radius"></select>
+            </div>
+            <div class="row">
+              <button disabled id="undo">Undo</button>
+              <button disabled id="redo">Redo</button>
+            </div>
           </div>
 
-          <div id="export">
+          <div id="modes" class="row">
+            <button id="merge">[M] Merge</button>
+            <button id="split">[B] Begin Split</button>
+            <button id="confirm">[S] Split from group</button>
+            <button id="escape"> [Esc] Exit current mode</button>
+          </div>
+
+          <div id="export" class="row">
             <button id="animate">Animate groups</button>
-            <p>Group strokes together that you feel were intended to depict the same intended curve.</p>
             <button id="done">
               I'm done, save my groupings
             </button>
