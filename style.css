@@ -35,12 +35,6 @@ a {
   justify-content: center;
   align-items: center;
 }
-#esc-split, #esc-animation {
-  display: none;
-}
-#esc-default, .highlighting #esc-animation, .split #esc-split {
-  display: inline;
-}
 .highlighting #esc-default, .split #esc-default {
   display: none;
 }
