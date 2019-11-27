@@ -178,18 +178,18 @@ a {
   /*animation: selectedNotif 0.6s 1 normal linear, pulse 4s infinite normal linear;*/
 }
 
-.split #svgContainer path {
+.split.selection #svgContainer path {
   opacity: 0.1;
   pointer-events: none;
 }
-.split #svgContainer path.selected {
+.split.selection #svgContainer path.selected {
   opacity: 0.2;
   pointer-events: auto;
 }
-.split #svgContainer path.selected:hover {
+.split.selection #svgContainer path.selected:hover {
   opacity: 1;
 }
-.split #svgContainer path.selected.subSelection {
+.split.selection #svgContainer path.selected.subSelection {
   opacity: 1;
   stroke: #F00 !important;
 }
