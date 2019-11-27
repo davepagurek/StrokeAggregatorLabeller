@@ -805,33 +805,41 @@ const loadInput = () => {
           const initBtn = document.createElement('button');
           initBtn.disabled = true;
           document.body.classList.add('timer');
+          const skipBtn = document.createElement('button');
+          skipBtn.innerText = 'Skip, I\'m ready to start';
           const vizTimer = () => {
             if (timer > 0) {
               initBtn.innerText = timer;
             } else {
               initBtn.innerText = 'I\'m ready to start labelling';
               initBtn.disabled = false;
+              svgContainer.removeChild(skipBtn);
             }
           };
+          let currentTimer = null;
+          const startLabelling = () => {
+            clearTimeout(currentTimer);
+            if (first) {
+              document.body.classList.add('unselected');
+              first = false;
+            }
+            svgContainer.classList.remove('init');
+            setupLabeller(name, svgContainer.querySelector('#svgContainer svg'));
+          };
           const setNextTimer = () => {
-            setTimeout(() => {
+            return setTimeout(() => {
               vizTimer();
               timer--;
               if (timer < 0) {
-                initBtn.addEventListener('click', () => {
-                  if (first) {
-                    document.body.classList.add('unselected');
-                    first = false;
-                  }
-                  svgContainer.classList.remove('init');
-                  setupLabeller(name, svgContainer.querySelector('#svgContainer svg'));
-                });
+                initBtn.addEventListener('click', startLabelling);
               } else {
-                setNextTimer();
+                currentTimer = setNextTimer();
               }
             }, 1000);
           };
+          skipBtn.addEventListener('click', startLabelling);
           svgContainer.appendChild(initBtn);
+          svgContainer.appendChild(skipBtn);
           vizTimer();
           timer--;
           setNextTimer();
