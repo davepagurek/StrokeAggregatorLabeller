@@ -223,7 +223,7 @@ section {
   display: flex;
   flex-direction: column;
 }
-#export {
+.sidebar-expand {
   display: flex;
   flex: 1;
   flex-direction: column;

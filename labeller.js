@@ -644,7 +644,6 @@ const download = (content, filename) => {
   document.body.appendChild(downloadLink);
   downloadLink.click();
   document.body.removeChild(downloadLink);
-  next.disabled = false;
 };
 
 const downloadFiles = (start = '') => {
@@ -652,7 +651,6 @@ const downloadFiles = (start = '') => {
   const duration = Math.round((new Date().getTime() - startTime.getTime())/1000);
   download(generateScap(),  `${start}${prefix}_${duration}s_cleaned.scap`);
 };
-document.getElementById('done').addEventListener('click', () => downloadFiles());
 document.getElementById('incomplete').addEventListener('click', () => {
   if (confirm('Ending early will skip all remaining drawings.')) {
     downloadFiles('INCOMPLETE_');
@@ -767,8 +765,8 @@ const loadInput = () => {
   if (!name) {
     return;
   }
-
   next.disabled = true;
+
   while (svgContainer.firstChild) svgContainer.removeChild(svgContainer.firstChild);
   while (reference.firstChild) reference.removeChild(reference.firstChild);
   const loader = document.createElement('h2');
@@ -825,6 +823,7 @@ const loadInput = () => {
             }
             svgContainer.classList.remove('init');
             setupLabeller(name, svgContainer.querySelector('#svgContainer svg'));
+            next.disabled = false;
           };
           const setNextTimer = () => {
             return setTimeout(() => {
@@ -873,12 +872,14 @@ radiusSelect.addEventListener('change', () => {
 
 next.addEventListener('click', () => {
   if (!next.disabled) {
+    downloadFiles();
     sequence.shift();
     if (sequence.length > 0) {
       loadInput();
     } else {
       document.body.classList.add('finished');
     }
+    next.disabled = true;
   }
 });
 loadInput();
