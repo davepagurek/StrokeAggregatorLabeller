@@ -44,6 +44,26 @@ a {
 .highlighting #esc-default, .split #esc-default {
   display: none;
 }
+
+.current-mode {
+  display: block;
+  width: 200px;
+  text-align: center;
+  color: #FFF;
+  padding: 10px;
+  margin-right: 20px;
+}
+#mode-selection { background-color: #666; }
+#mode-merge { background-color: #D44; }
+#mode-split { background-color: #6B6; }
+#mode-animation { background-color: #66B; }
+#mode-merge, #mode-split, #mode-animation, .highlighting #mode-selection, .merge #mode-selection, .split #mode-selection {
+  display: none;
+}
+.highlighting #mode-animation, .split #mode-split, .merge #mode-merge {
+  display: block;
+}
+
 #merge, #split, #confirm, #break, #escape {
   opacity: 0.4;
   cursor: default;
@@ -246,10 +266,12 @@ button#next {
 button#next:not([disabled]) {
   background-color: #ddfdb3;
 }
-#header {
+section#header {
   background-color: #EEE;
+  padding: 0;
+  align-items: center;
 }
-#header p {
+section#header p {
   margin: 5px;
 }
 #editor {
