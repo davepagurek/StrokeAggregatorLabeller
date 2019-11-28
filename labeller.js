@@ -60,7 +60,7 @@ let selectionMode = null;
 const setSelectionMode = mode => {
   document.body.classList.remove('merge');
   document.body.classList.remove('split');
-  document.body.classList.remove('break');
+  document.body.classList.remove('breaking');
   document.body.classList.add(mode);
   selectionMode = mode;
 };
@@ -231,8 +231,10 @@ const state = {
           // Select the elements in the new group
           state.groups[newState.selection].forEach(p => p.classList.add('selected'));
           document.body.classList.add('selection');
+          document.body.classList.remove('unselected');
         } else {
           document.body.classList.remove('selection');
+          document.body.classList.add('unselected');
         }
 
       } else if (key === 'groups') {
@@ -282,8 +284,6 @@ const state = {
           const point = p.getPointAtLength(newState.breakAt * p.getTotalLength());
           breakIndicator.setAttribute('cx', point.x);
           breakIndicator.setAttribute('cy', point.y);
-        } else {
-          document.body.classList.remove('breaking');
         }
       }
 
@@ -583,7 +583,6 @@ const setupLabeller = (name, svg) => {
           });
           handleEscape();
           state.setState({ split: true, selection: state.getGroup(minPath) });
-          document.body.classList.remove('unselected');
         } else {
           paths = paths.filter(p => state.getGroup(p) === state.selection);
           const allSelected = paths.every(path => state.subSelected(path));
@@ -598,9 +597,9 @@ const setupLabeller = (name, svg) => {
           }
         }
       } else {
-        state.handleEscape();
+        handleEscape();
       }
-    } else if (selectionMode === 'break') {
+    } else if (selectionMode === 'breaking') {
       if (paths.length > 0 && state.subSelection.length === 0) {
         let minDist = Infinity;
         let minPath = null;
@@ -618,6 +617,8 @@ const setupLabeller = (name, svg) => {
         document.body.classList.remove('unselected');
       } else if (state.subSelection.length === 1) {
         handleBreak();
+      } else {
+        handleEscape();
       }
     }
   });
@@ -712,6 +713,7 @@ const handleEscape = () => {
   if (!document.body.classList.contains('selection')) return;
   if (state.selection) document.body.classList.remove('first-selection');
   if (state.subSelection.length > 0) document.body.classList.remove('first-split');
+  const currentMode = selectionMode;
   state.setState({
     split: false,
     merge: false,
@@ -719,6 +721,7 @@ const handleEscape = () => {
     subSelection: [],
     selection: null
   });
+  setSelectionMode(currentMode);
 };
 
 const zoomIn = () => {
@@ -745,13 +748,13 @@ document.addEventListener('keydown', (event) => {
   if (event.key === '1' || event.key === 'm') {
     //handleMerge();
     setSelectionMode('merge');
-  } else if (event.key === '2' || event.key === 'b') {
+  } else if (event.key === '2' || event.key === 's') {
     //handleSplit();
     setSelectionMode('split');
-  } else if (event.key === '3' || event.key === 's') {
+  } else if (event.key === '3' || event.key === 'c') {
     handleConfirm();
-  } else if (event.key === '4' || event.key === 'k') {
-    setSelectionMode('break');
+  } else if (event.key === '4' || event.key === 'b') {
+    setSelectionMode('breaking');
     //handleBreak();
   } else if (event.key === 'Escape') {
     handleEscape();
@@ -779,7 +782,7 @@ document.getElementById('animate').addEventListener('click', animateGroups);
 document.getElementById('merge').addEventListener('click', () => setSelectionMode('merge'));
 document.getElementById('split').addEventListener('click', () => setSelectionMode('split'));
 document.getElementById('confirm').addEventListener('click', handleConfirm);
-document.getElementById('break').addEventListener('click', () => setSelectionMode('break'));
+document.getElementById('break').addEventListener('click', () => setSelectionMode('breaking'));
 document.getElementById('escape').addEventListener('click', handleEscape);
 document.getElementById('redownload').addEventListener('click', () => {
   Object.keys(downloads).forEach(filename => download(downloads[filename], filename));
