@@ -55,15 +55,16 @@ const notify = p => {
 
 let brushIndicator = null;
 let breakIndicator = null;
-let selectionMode = null;
+const uiData = { selectionMode: 'merge', animationTimer: null };
 
-const setSelectionMode = mode => {
+function setSelectionMode(mode) {
   document.body.classList.remove('merge');
   document.body.classList.remove('split');
   document.body.classList.remove('breaking');
+  if (mode !== uiData.selectionMode) handleEscape();
   document.body.classList.add(mode);
-  selectionMode = mode;
-};
+  uiData.selectionMode = mode;
+}
 
 setSelectionMode('merge');
 
@@ -383,6 +384,10 @@ const state = {
     const newGroupColors = [];
     const paths = [pointsStart, pointsEnd].map((polyline, i) => {
       const element = document.createElementNS(ns, 'path');
+      element.setAttribute('stroke-width', path.getAttribute('stroke-width'));
+      if (path.getAttribute('data-strokeWidth')) {
+        element.setAttribute('data-strokeWidth', path.getAttribute('data-strokeWidth'));
+      }
       element.setAttribute('data-globalId', Math.max(...state.paths.map(p => parseInt(p.getAttribute('data-globalId'))))+1+i);
       element.setAttribute('d', `M ${polyline[0][0].toPrecision(6)} ${polyline[0][1].toPrecision(6)} ` +
         polyline.slice(1).map(([x,y]) => `L ${x.toPrecision(6)} ${y.toPrecision(6)}`).join(' '));
@@ -429,14 +434,17 @@ const generateScap = () => {
 
   return (
     `#${svg.getAttribute('data-width')}\t${svg.getAttribute('data-height')}\n` +
-    '@1.5\n' +
+    `@${svg.getAttribute('data-strokeWidth')}\n` +
     Object.keys(state.groups).filter(g => state.groups[g]).map(group =>
       state.groups[group].map(path => {
         const pathId = path.getAttribute('data-globalId');
         const id = pathId;
+        const strokeWidth = path.getAttribute('data-strokeWidth');
+        const widthLine = strokeWidth ? `\t@${strokeWidth}\n` : '';
         return (
           '{\n' +
           `\t#${id}\t${groupIndex[group]}\n` +
+          widthLine +
           path
             .getAttribute('d')
             .substring(2)
@@ -455,7 +463,6 @@ const generateScap = () => {
   );
 };
 
-let animationTimer = null;
 const animateGroups = () => {
   const svg = document.querySelector('#svgContainer svg');
   if (svgContainer.classList.contains('init') || !svg) return;
@@ -482,9 +489,9 @@ const animateGroups = () => {
     highlightNext();
 
     if (remaining.length > 0) {
-      animationTimer = setTimeout(timerCallback, HIGHLIGHT_TIME);
+      uiData.animationTimer = setTimeout(timerCallback, HIGHLIGHT_TIME);
     } else {
-      animationTimer = setTimeout(() => {
+      uiData.animationTimer = setTimeout(() => {
         document.body.classList.remove('highlighting');
         [...svg.querySelectorAll('.highlighted')].forEach(p => p.classList.remove('highlighted'));
       }, HIGHLIGHT_TIME);
@@ -527,7 +534,7 @@ const setupLabeller = (name, svg) => {
   };
   svg.addEventListener('mousemove', (event) => {
     const target = handleMouseMove(event);
-    if (selectionMode === 'breaking' && state.selection && state.subSelection.length === 1) {
+    if (uiData.selectionMode === 'breaking' && state.selection && state.subSelection.length === 1) {
       const totalLength = state.subSelection[0].getTotalLength();
       let range = [0, 1];
       let closestDist = Infinity;
@@ -561,13 +568,13 @@ const setupLabeller = (name, svg) => {
     }
   });
   svg.addEventListener('click', (event) => {
-    if (animationTimer !== null) {
+    if (uiData.animationTimer !== null) {
       return handleEscape();
     }
 
     const target = handleMouseMove(event);
     let paths = state.getPathsNear(target, state.radius+1);
-    if (selectionMode === 'merge') {
+    if (uiData.selectionMode === 'merge') {
       if (paths.length > 0) {
         document.body.classList.remove('unselected');
         if (!state.merge || !state.selection) {
@@ -594,7 +601,7 @@ const setupLabeller = (name, svg) => {
       } else {
         handleEscape();
       }
-    } else if (selectionMode === 'split') {
+    } else if (uiData.selectionMode === 'split') {
       if (paths.length > 0) {
         if (!state.split || !state.selection) {
           let minDist = Infinity;
@@ -626,7 +633,7 @@ const setupLabeller = (name, svg) => {
       } else {
         handleEscape();
       }
-    } else if (selectionMode === 'breaking') {
+    } else if (uiData.selectionMode === 'breaking') {
       if (paths.length > 0 && state.subSelection.length === 0) {
         let minDist = Infinity;
         let minPath = null;
@@ -731,17 +738,17 @@ const handleConfirm = () => {
   }
 };
 
-const handleEscape = () => {
-  if (animationTimer !== null) {
-    clearTimeout(animationTimer);
-    animationTimer = null;
+function handleEscape() {
+  if (uiData.animationTimer !== null) {
+    clearTimeout(uiData.animationTimer);
+    uiData.animationTimer = null;
     document.body.classList.remove('highlighting');
     [...document.querySelectorAll('.highlighted')].forEach(p => p.classList.remove('highlighted'));
   }
   if (!document.body.classList.contains('selection')) return;
   if (state.selection) document.body.classList.remove('first-selection');
   if (state.subSelection.length > 0) document.body.classList.remove('first-split');
-  const currentMode = selectionMode;
+  const currentMode = uiData.selectionMode;
   state.setState({
     split: false,
     merge: false,
@@ -750,7 +757,7 @@ const handleEscape = () => {
     selection: null
   });
   setSelectionMode(currentMode);
-};
+}
 
 const zoomIn = () => {
   const svg = document.querySelector('#svgContainer svg');
@@ -853,15 +860,16 @@ const scapToSVG = function*(scap) {
 
   const readThickness = () => {
     if (tokens[0].startsWith('@')) {
-      thickness = parseFloat(tokens.shift().substring(1));
+      return parseFloat(tokens.shift().substring(1));
     }
+    return null;
   };
 
   const readStroke = () => {
     tokens.shift();
     const globalId = tokens.shift().substring(1);
     const group = parseInt(tokens.shift());
-    readThickness();
+    const strokeWidth = readThickness();
     const polyline = [];
     while (tokens.length>=3 && !tokens[0].startsWith('}')) {
       const x = tokens.shift();
@@ -872,7 +880,7 @@ const scapToSVG = function*(scap) {
     tokens.shift();
 
     groups[group] = groups[group] || [];
-    groups[group].push({ globalId, polyline });
+    groups[group].push({ globalId, polyline, strokeWidth });
   }
 
   const readStrokes = () => {
@@ -881,7 +889,8 @@ const scapToSVG = function*(scap) {
 
   const readScap = () => {
     readSize();
-    readThickness();
+    const t = readThickness();
+    if (t) thickness = t;
     readStrokes();
   };
 
@@ -925,14 +934,16 @@ const scapToSVG = function*(scap) {
   svg.setAttribute('viewBox', `0 0 ${w} ${h}`);
   svg.setAttribute('data-width', w);
   svg.setAttribute('data-height', h);
+  svg.setAttribute('data-strokeWidth', thickness);
 
   for (let group in groups) {
-    groups[group].forEach(({ globalId, polyline }) => {
+    groups[group].forEach(({ globalId, polyline, strokeWidth }) => {
       const path = document.createElementNS(ns, 'path');
       path.setAttribute('d', `M ${polyline[0]} ${polyline.slice(1).map(c => 'L '+c).join(' ')}`);
       path.setAttribute('data-globalId', globalId);
       path.setAttribute('stroke', groupColors[group]);
-      path.setAttribute('stroke-width', thickness);
+      if (strokeWidth) path.setAttribute('data-strokeWidth', strokeWidth);
+      path.setAttribute('stroke-width', strokeWidth || thickness);
       svg.appendChild(path);
     });
   }
