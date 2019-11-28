@@ -428,7 +428,7 @@ const generateScap = () => {
   }
 
   return (
-    `#${svg.getAttribute('data-width')} ${svg.getAttribute('data-height')}\n` +
+    `#${svg.getAttribute('data-width')}\t${svg.getAttribute('data-height')}\n` +
     '@1.5\n' +
     Object.keys(state.groups).filter(g => state.groups[g]).map(group =>
       state.groups[group].map(path => {
@@ -450,7 +450,7 @@ const generateScap = () => {
     '\n\n' +
     Object.keys(state.splits).map(child => {
       const [parent, from, to] = state.splits[child];
-      return `${child}: ${parent} [${from}, ${to})`
+      return `#${parent} [${from}, ${to}) --> #${child}`
     }).join('\n')
   );
 };
@@ -458,7 +458,7 @@ const generateScap = () => {
 let animationTimer = null;
 const animateGroups = () => {
   const svg = document.querySelector('#svgContainer svg');
-  if (!svg) return;
+  if (svgContainer.classList.contains('init') || !svg) return;
 
   handleEscape();
 
@@ -561,6 +561,10 @@ const setupLabeller = (name, svg) => {
     }
   });
   svg.addEventListener('click', (event) => {
+    if (animationTimer !== null) {
+      return handleEscape();
+    }
+
     const target = handleMouseMove(event);
     let paths = state.getPathsNear(target, state.radius+1);
     if (selectionMode === 'merge') {
@@ -587,6 +591,8 @@ const setupLabeller = (name, svg) => {
           }
         });
         if (changed) state.commit();
+      } else {
+        handleEscape();
       }
     } else if (selectionMode === 'split') {
       if (paths.length > 0) {
@@ -728,6 +734,7 @@ const handleConfirm = () => {
 const handleEscape = () => {
   if (animationTimer !== null) {
     clearTimeout(animationTimer);
+    animationTimer = null;
     document.body.classList.remove('highlighting');
     [...document.querySelectorAll('.highlighted')].forEach(p => p.classList.remove('highlighted'));
   }

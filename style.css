@@ -54,7 +54,7 @@ a {
 .mode-merge, .mode-split, .mode-animation, .mode-break {
   display: none;
 }
-.highlighting .mode-animation, .split .mode-split, .merge .mode-merge, .breaking .mode-break {
+.highlighting .mode-animation, .split:not(.highlighting) .mode-split, .merge:not(.highlighting) .mode-merge, .breaking:not(.highlighting) .mode-break {
   display: block;
 }
 
