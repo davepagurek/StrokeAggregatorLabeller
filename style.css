@@ -35,12 +35,6 @@ a {
   justify-content: center;
   align-items: center;
 }
-#esc-split, #esc-animation {
-  display: none;
-}
-#esc-default, .highlighting #esc-animation, .split #esc-split {
-  display: inline;
-}
 .highlighting #esc-default, .split #esc-default {
   display: none;
 }
@@ -53,40 +47,48 @@ a {
   padding: 10px;
   margin-right: 20px;
 }
-#mode-selection { background-color: #666; }
-#mode-merge { background-color: #D44; }
-#mode-split { background-color: #6B6; }
-#mode-animation { background-color: #66B; }
-#mode-merge, #mode-split, #mode-animation, .highlighting #mode-selection, .merge #mode-selection, .split #mode-selection {
+.current-mode.mode-break { background-color: #FF8C00; }
+.current-mode.mode-merge { background-color: #FF2D00; }
+.current-mode.mode-split { background-color: #04756F; }
+.current-mode.mode-animation { background-color: #2E0927; }
+.mode-merge, .mode-split, .mode-animation, .mode-break {
   display: none;
 }
-.highlighting #mode-animation, .split #mode-split, .merge #mode-merge {
+.highlighting .mode-animation, .split .mode-split, .merge .mode-merge, .breaking .mode-break {
   display: block;
 }
 
-#merge, #split, #confirm, #break, #escape {
+#merge, #split, #confirm, #break {
   opacity: 0.4;
   cursor: default;
 }
-.selection #merge, .selection #split, .selection #escape, .highlighting #escape {
+.unselected #merge, .unselected #split, .unselected #break {
   opacity: 1;
   cursor: pointer;
 }
-.merge.selection #split, .merge.selection #confirm, .merge.selection #merge {
+.merge #merge, .split #split, .breaking #break {
+  background-color: #333;
+  color: #FFF;
+  opacity: 1;
+  cursor: default;
+}
+#escape {
+  opacity: 1;
+  cursor: pointer;
+}
+.unselected #escape {
   opacity: 0.4;
   cursor: default;
 }
-.split.selection #merge, .split.selection #split, .split.selection #break {
-  opacity: 0.4;
-  cursor: default;
-}
+
 .selection #confirm {
   opacity: 0.4;
   cursor: default;
 }
-.split.selection.subselection #confirm, .split.selection.subselection.single #break {
+.split.selection.subselection #confirm {
   opacity: 1;
   cursor: pointer;
+  animation: selectedNotif 0.6s 1 normal linear, pulse 4s infinite normal linear;
 }
 .split.selection.subselection.breaking #confirm {
   opacity: 0.4;
@@ -96,7 +98,7 @@ a {
 #breakIndicator {
   opacity: 0;
 }
-.breaking #breakIndicator {
+.breaking.selection.single.breakAt #breakIndicator {
   opacity: 1;
 }
 .message {
@@ -178,18 +180,18 @@ a {
   /*animation: selectedNotif 0.6s 1 normal linear, pulse 4s infinite normal linear;*/
 }
 
-.split #svgContainer path {
+.split.selection #svgContainer path, .breaking.selection #svgContainer path {
   opacity: 0.1;
   pointer-events: none;
 }
-.split #svgContainer path.selected {
+.split.selection #svgContainer path.selected {
   opacity: 0.2;
   pointer-events: auto;
 }
-.split #svgContainer path.selected:hover {
+.split.selection #svgContainer path.selected:hover {
   opacity: 1;
 }
-.split #svgContainer path.selected.subSelection {
+.split.selection #svgContainer path.selected.subSelection, .breaking.selection #svgContainer path.selected.subSelection {
   opacity: 1;
   stroke: #F00 !important;
 }
@@ -316,7 +318,7 @@ body:not(.timer) #reference svg {
 }
 @keyframes pulse {
   50% {
-    stroke: #F0F;
+    background-color: #FF8C00;
     /*opacity: 0.05;*/
   }
 }

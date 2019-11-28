@@ -18,26 +18,29 @@
     </div>
     <div id="app" class="column">
       <section id="header">
-        <div class="current-mode" id="mode-selection">Selection mode</div>
-        <div class="current-mode" id="mode-merge">Merge mode</div>
-        <div class="current-mode" id="mode-split">Split mode</div>
-        <div class="current-mode" id="mode-animation">Animation mode</div>
-        <p>Group strokes together that you feel were intended to depict the same intended curve.</p>
+        <div class="current-mode mode-merge">Merge mode</div>
+        <div class="current-mode mode-split">Split mode</div>
+        <div class="current-mode mode-animation">Animation mode</div>
+        <div class="current-mode mode-break">Break mode</div>
+        <p class="mode-merge">Group strokes together that you feel were intended to depict the same intended curve.</p>
+        <p class="mode-split">Select some strokes in this group and then press [C] to turn them into their own group.</p>
+        <p class="mode-break">Click on a stroke, then move the mouse to position the break. Click to confirm.</p>
+        <p class="mode-animation">Make sure that nothing is accidentally grouped that should be kept separate.</p>
       </section>
 
       <section id="editor">
-        <div id="firstSplitMessage" class="message">
-          Select some strokes in this group and then press [S] to turn them into their own group.
-        </div>
-        <div id="firstSelectMessage" class="message">
-          Press [M] to start selecting groups to merge with, or [B] to select strokes in this group to split away.
-        </div>
-        <div id="selectMessage" class="message">
-          Click on a stroke to select it and its group.
-        </div>
-        <div id="breakMessage" class="message">
-          Move the mouse to position the break. Press [K] to confirm.
-        </div>
+        <!--<div id="firstSplitMessage" class="message">-->
+          <!--Select some strokes in this group and then press [S] to turn them into their own group.-->
+        <!--</div>-->
+        <!--<div id="firstSelectMessage" class="message">-->
+          <!--Press [M] to start selecting groups to merge with, or [B] to select strokes in this group to split away.-->
+        <!--</div>-->
+        <!--<div id="selectMessage" class="message">-->
+          <!--Click on a stroke to select it and its group.-->
+        <!--</div>-->
+        <!--<div id="breakMessage" class="message">-->
+          <!--Move the mouse to position the break. Press [K] to confirm.-->
+        <!--</div>-->
         <div id="reference">
         </div>
         <div id="svgContainer">
@@ -57,13 +60,10 @@
 
           <div id="modes" class="row">
             <button id="merge">[M] Merge</button>
-            <button id="split">[B] Begin Split</button>
-            <button id="confirm">[S] Split from group</button>
-            <button id="escape"> [Esc]
-              <span id="esc-default">Deselect</span>
-              <span id="esc-split">Cancel split</span>
-              <span id="esc-animation">Stop animation</span>
-            </button>
+            <button id="split">[S] Begin Split</button>
+            <button id="confirm">[C] Confirm Split</button>
+            <button id="break">[B] Break stroke</button>
+            <button id="escape"> [Esc] Deselect</button>
           </div>
 
           <div class="row sidebar-expand">
