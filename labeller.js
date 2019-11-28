@@ -73,7 +73,7 @@ const updateButtons = () => {
   undoBtn.disabled = undoStack.length <= 1;
   redoBtn.disabled = redoStack.length == 0;
 };
-const undoKeys = new Set(['groups'])
+const undoKeys = new Set(['groups', 'splits'])
 const state = {
   paths: [], // References to all svg path elements onscreen
   groups: {}, // Path elements indexed by their colour
@@ -83,6 +83,7 @@ const state = {
   merge: false,
   split: false,
   breakAt: null,
+  splits: {},
   subSelection: [], // In split mode, the individual path elements that are set to become their own group
   radius: 5,
   name: '', // The base name of the file
@@ -113,6 +114,7 @@ const state = {
       groups: mapObjValues(s.groups, group => [...group]),
       pathSamples: mapMapValues(s.pathSamples, samples => [...samples]),
       subSelection: [...s.subSelection],
+      splits: mapObjValues(s.splits, split => [...split]),
     };
   },
 
@@ -153,6 +155,10 @@ const state = {
       });
     }
 
+    state.splits = newState.splits;
+    if (state.breakAt) {
+      handleEscape();
+    }
     if (state.selection && !newState.groups[state.selection]) {
       handleEscape();
     }
@@ -389,13 +395,15 @@ const state = {
       return element;
     });
 
+    state.splits[paths[0].getAttribute('data-globalId')] = [ path.getAttribute('data-globalId'), 0, splitIdx+1 ];
+    state.splits[paths[1].getAttribute('data-globalId')] = [ path.getAttribute('data-globalId'), splitIdx, points.length ];
+
     state.groups[state.getGroup(path)] = state.groups[state.getGroup(path)].filter(p => p != path);
     state.paths = state.paths.filter(p => p != path).concat(paths);
     path.parentElement.removeChild(path);
 
     const newPathSamples = [[], []];
     state.pathSamples.get(path).forEach(sample => {
-      // TODO make this support breaks upon breaks
       const pathIdx = sample.length - state.pathSamples.get(path)[0].length < splitDist ? 0 : 1;
       sample.path = paths[pathIdx];
       newPathSamples[pathIdx].push(sample);
@@ -438,7 +446,12 @@ const generateScap = () => {
           '\n}\n'
         );
       }).join('')
-    ).join('')
+    ).join('') +
+    '\n\n' +
+    Object.keys(state.splits).map(child => {
+      const [parent, from, to] = state.splits[child];
+      return `${child}: ${parent} [${from}, ${to})`
+    }).join('\n')
   );
 };
 
@@ -635,7 +648,7 @@ const setupLabeller = (name, svg) => {
   while (undoStack.length > 0) undoStack.pop();
   while (redoStack.length > 0) redoStack.pop();
   state.setState({ name, paths }, true);
-  state.setState({ selection: null, merge: false, split: false, breakAt: null, subSelection: [] }, true);
+  state.setState({ selection: null, merge: false, split: false, breakAt: null, subSelection: [], splits: {} }, true);
   state.commit();
 
   // Add click handlers on each new path element
