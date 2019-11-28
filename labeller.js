@@ -284,6 +284,9 @@ const state = {
           const point = p.getPointAtLength(newState.breakAt * p.getTotalLength());
           breakIndicator.setAttribute('cx', point.x);
           breakIndicator.setAttribute('cy', point.y);
+          document.body.classList.add('breakAt');
+        } else {
+          document.body.classList.remove('breakAt');
         }
       }
 
@@ -511,9 +514,10 @@ const setupLabeller = (name, svg) => {
   };
   svg.addEventListener('mousemove', (event) => {
     const target = handleMouseMove(event);
-    if (state.breakAt !== null) {
+    if (selectionMode === 'breaking' && state.selection && state.subSelection.length === 1) {
       const totalLength = state.subSelection[0].getTotalLength();
       let range = [0, 1];
+      let closestDist = Infinity;
       while (range[1]-range[0] > 0.001) {
         let subdivided = [];
         for (let i = 0; i <= 1; i += 0.1) {
@@ -521,7 +525,7 @@ const setupLabeller = (name, svg) => {
         }
 
         let closest = null;
-        let closestDist = Infinity;
+        closestDist = Infinity;
         subdivided.forEach(t => {
           const sample = state.subSelection[0].getPointAtLength(t*totalLength);
           const dist = Math.hypot(sample.x-target.x, sample.y-target.y);
@@ -536,7 +540,11 @@ const setupLabeller = (name, svg) => {
         range[0] = closest - r/2;
         range[1] = closest + r/2;
       }
-      state.setState({ breakAt: (range[1]+range[0])/2 });
+      if (closestDist < 50) {
+        state.setState({ breakAt: (range[1]+range[0])/2 });
+      } else {
+        state.setState({ breakAt: null });
+      }
     }
   });
   svg.addEventListener('click', (event) => {
@@ -615,7 +623,7 @@ const setupLabeller = (name, svg) => {
         state.setState({ split: true, breakAt: null, selection: state.getGroup(minPath), subSelection: [minPath] });
         handleBreak();
         document.body.classList.remove('unselected');
-      } else if (state.subSelection.length === 1) {
+      } else if (state.subSelection.length === 1 && state.breakAt !== null) {
         handleBreak();
       } else {
         handleEscape();
