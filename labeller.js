@@ -2,6 +2,7 @@ const ns = 'http://www.w3.org/2000/svg'; // needs to be passed in when creating 
 const svgContainer = document.getElementById('svgContainer');
 const reference = document.getElementById('reference');
 const sequence = (window.location.hash && sequences[window.location.hash.slice(1)]) || sequences[Object.keys(sequences)[0]];
+const sequenceLength = sequence.length;
 const next = document.getElementById('next');
 
 const COUNTDOWN_LENGTH = 20;
@@ -1068,6 +1069,8 @@ const loadInput = () => {
           refSVG.setAttribute('width', refSVG.getAttribute('data-width'));
           refSVG.setAttribute('height', refSVG.getAttribute('data-height'));
           reference.appendChild(refSVG);
+
+          document.getElementById('remaining').innerText = `Sketch ${sequenceLength-sequence.length+1}/${sequenceLength}`;
           //svgContainer.innerHTML = src;
         } else {
           window.requestAnimationFrame(incrementalWork);
