@@ -61,9 +61,10 @@ function setSelectionMode(mode) {
   document.body.classList.remove('merge');
   document.body.classList.remove('split');
   document.body.classList.remove('breaking');
-  if (mode !== uiData.selectionMode) handleEscape();
+  const changed = mode !== uiData.selectionMode;
   document.body.classList.add(mode);
   uiData.selectionMode = mode;
+  if (changed) handleEscape();
 }
 
 setSelectionMode('merge');
@@ -745,7 +746,6 @@ function handleEscape() {
     document.body.classList.remove('highlighting');
     [...document.querySelectorAll('.highlighted')].forEach(p => p.classList.remove('highlighted'));
   }
-  if (!document.body.classList.contains('selection')) return;
   if (state.selection) document.body.classList.remove('first-selection');
   if (state.subSelection.length > 0) document.body.classList.remove('first-split');
   const currentMode = uiData.selectionMode;
