@@ -253,8 +253,9 @@ button {
   margin: 5px 30px;
 }
 #sidebar #tools button {
-  width: 80px;
+  width: 93px;
   margin: 5px 5px;
+  padding: 5px 5px;
 }
 button:hover {
   box-shadow: 0 2px 5px rgba(0,0,0,0.4);

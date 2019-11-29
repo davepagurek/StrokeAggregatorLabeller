@@ -13,6 +13,8 @@ const downloads = {};
 
 const undoBtn = document.getElementById('undo');
 const redoBtn = document.getElementById('redo');
+const zoomInBtn = document.getElementById('zoomIn');
+const zoomOutBtn = document.getElementById('zoomOut');
 
 // Groups are identified by their colour as a kind of guid
 const chars = '0123456789abcdef';
@@ -786,6 +788,7 @@ const zoomIn = () => {
   const svg = document.querySelector('#svgContainer svg');
   if (!svg) return;
   zoom++;
+  zoomOutBtn.disabled = zoom == 1;
   svg.setAttribute('width', svg.clientWidth*2);
 };
 
@@ -794,6 +797,7 @@ const zoomOut = () => {
   if (!svg) return;
   if (zoom == 1) return;
   zoom--;
+  zoomOutBtn.disabled = zoom == 1;
   if (zoom == 1) {
     svg.removeAttribute('width');
   } else {
@@ -836,6 +840,8 @@ document.addEventListener('keydown', (event) => {
 });
 undoBtn.addEventListener('click', () => state.undo());
 redoBtn.addEventListener('click', () => state.redo());
+zoomInBtn.addEventListener('click', zoomIn);
+zoomOutBtn.addEventListener('click', zoomOut);
 document.getElementById('animate').addEventListener('click', animateGroups);
 document.getElementById('merge').addEventListener('click', () => setSelectionMode('merge'));
 document.getElementById('split').addEventListener('click', () => setSelectionMode('split'));
