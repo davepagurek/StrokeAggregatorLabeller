@@ -535,38 +535,6 @@ const setupLabeller = (name, svg) => {
   };
   svg.addEventListener('mousemove', (event) => {
     const target = handleMouseMove(event);
-    if (uiData.selectionMode === 'breaking' && state.selection && state.subSelection.length === 1) {
-      const totalLength = state.subSelection[0].getTotalLength();
-      let range = [0, 1];
-      let closestDist = Infinity;
-      while (range[1]-range[0] > 0.001) {
-        let subdivided = [];
-        for (let i = 0; i <= 1; i += 0.1) {
-          subdivided.push(range[0] + i*(range[1]-range[0]));
-        }
-
-        let closest = null;
-        closestDist = Infinity;
-        subdivided.forEach(t => {
-          const sample = state.subSelection[0].getPointAtLength(t*totalLength);
-          const dist = Math.hypot(sample.x-target.x, sample.y-target.y);
-          if (dist < closestDist) {
-            closestDist = dist;
-            closest = t;
-          }
-        });
-
-        if (closest === null) break;
-        const r = (range[1]-range[0])/2;
-        range[0] = closest - r/2;
-        range[1] = closest + r/2;
-      }
-      if (closestDist < 50) {
-        state.setState({ breakAt: (range[1]+range[0])/2 });
-      } else {
-        state.setState({ breakAt: null });
-      }
-    }
   });
   svg.addEventListener('click', (event) => {
     if (uiData.animationTimer !== null) {
@@ -581,24 +549,22 @@ const setupLabeller = (name, svg) => {
         if (!state.merge || !state.selection) {
           handleEscape();
           state.setState({ merge: true, selection: state.getGroup(paths[0]) });
-        }
-        let changed = false;
-        paths.forEach(path => {
-          if (state.getGroup(path) !== state.selection) {
-            changed = true;
+        } else {
+          const groups = new Set(paths
+            .map(p => state.getGroup(p))
+            .filter(g => g !== state.selection));
+          paths = state.paths.filter(p => groups.has(state.getGroup(p)));
+          const allSelected = paths.every(path => state.subSelected(path));
+          if (allSelected) {
             state.setState({
-              groups: {
-                ...state.groups,
-                [ state.selection ]: [
-                  ...state.getGroupMembers(state.selection),
-                  ...state.getGroupMembers(state.getGroup(path))
-                ],
-                [ state.getGroup(path) ]: undefined
-              }
-            }, true);
+              subSelection: state.subSelection.filter(p => !paths.includes(p))
+            });
+          } else {
+            state.setState({
+              subSelection: [ ...state.subSelection, ...paths.filter(p =>  !state.subSelection.includes(p)) ]
+            });
           }
-        });
-        if (changed) state.commit();
+        }
       } else {
         handleEscape();
       }
@@ -635,7 +601,38 @@ const setupLabeller = (name, svg) => {
         handleEscape();
       }
     } else if (uiData.selectionMode === 'breaking') {
-      if (paths.length > 0 && state.subSelection.length === 0) {
+      if (state.selection && state.subSelection.length === 1) {
+        const totalLength = state.subSelection[0].getTotalLength();
+        let range = [0, 1];
+        let closestDist = Infinity;
+        while (range[1]-range[0] > 0.001) {
+          let subdivided = [];
+          for (let i = 0; i <= 1; i += 0.1) {
+            subdivided.push(range[0] + i*(range[1]-range[0]));
+          }
+
+          let closest = null;
+          closestDist = Infinity;
+          subdivided.forEach(t => {
+            const sample = state.subSelection[0].getPointAtLength(t*totalLength);
+            const dist = Math.hypot(sample.x-target.x, sample.y-target.y);
+            if (dist < closestDist) {
+              closestDist = dist;
+              closest = t;
+            }
+          });
+
+          if (closest === null) break;
+          const r = (range[1]-range[0])/2;
+          range[0] = closest - r/2;
+          range[1] = closest + r/2;
+        }
+        if (closestDist < 50) {
+          state.setState({ breakAt: (range[1]+range[0])/2 });
+        } else {
+          handleEscape();
+        }
+      } else if (paths.length > 0 && state.subSelection.length === 0) {
         let minDist = Infinity;
         let minPath = null;
         paths.forEach(p => {
@@ -650,11 +647,10 @@ const setupLabeller = (name, svg) => {
         state.setState({ split: true, breakAt: null, selection: state.getGroup(minPath), subSelection: [minPath] });
         handleBreak();
         document.body.classList.remove('unselected');
-      } else if (state.subSelection.length === 1 && state.breakAt !== null) {
-        handleBreak();
-      } else {
-        handleEscape();
       }
+
+    } else {
+      handleEscape();
     }
   });
 
@@ -699,8 +695,31 @@ const handleBreak = () => {
 };
 
 const handleConfirm = () => {
-  if (!document.body.classList.contains('selection')) return;
-  if (state.split && state.subSelection.length > 0) {
+  if (!state.selection || state.subSelection.length === 0) return;
+
+  if (uiData.selectionMode === 'merge') {
+    let changed = false;
+    state.subSelection.forEach(path => {
+      if (state.getGroup(path) !== state.selection) {
+        changed = true;
+        state.setState({
+          groups: {
+            ...state.groups,
+            [ state.selection ]: [
+              ...state.getGroupMembers(state.selection),
+              ...state.getGroupMembers(state.getGroup(path))
+            ],
+            [ state.getGroup(path) ]: undefined
+          }
+        }, true);
+      }
+    });
+    if (changed) {
+      state.setState({ subSelection: [] }, true);
+      state.commit();
+    };
+
+  } else if (uiData.selectionMode === 'split') {
     document.body.classList.remove('first-split');
     const oldSelection = state.selection;
     state.setState({ selection: null });
@@ -736,6 +755,10 @@ const handleConfirm = () => {
       },
       subSelection: []
     });
+  } else if (uiData.selectionMode === 'breaking') {
+    if (state.subSelection.length === 1 && state.breakAt !== null) {
+      handleBreak();
+    }
   }
 };
 

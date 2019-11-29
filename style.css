@@ -58,6 +58,9 @@ a {
   display: block;
 }
 
+.space {
+  height: 20px;
+}
 #merge, #split, #confirm, #break {
   opacity: 0.4;
   cursor: default;
@@ -85,7 +88,7 @@ a {
   opacity: 0.4;
   cursor: default;
 }
-.split.selection.subselection #confirm {
+.split.selection.subselection #confirm, .merge.selection.subselection #confirm, .breaking.selection.subselection.single #confirm {
   opacity: 1;
   cursor: pointer;
   animation: selectedNotif 0.6s 1 normal linear, pulse 4s infinite normal linear;
@@ -191,8 +194,9 @@ a {
 .split.selection #svgContainer path.selected:hover {
   opacity: 1;
 }
-.split.selection #svgContainer path.selected.subSelection, .breaking.selection #svgContainer path.selected.subSelection {
+.merge.selection #svgContainer path.subSelection, .split.selection #svgContainer path.selected.subSelection, .breaking.selection #svgContainer path.selected.subSelection {
   opacity: 1;
+  stroke-width: 3px;
   stroke: #F00 !important;
 }
 .highlighting #svgContainer path {
