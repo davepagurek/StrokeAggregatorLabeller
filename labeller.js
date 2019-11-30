@@ -20,6 +20,12 @@ const showModalSlide = slide => {
   modalPrev.disabled = !slide.previousElementSibling;
   modalSlides.forEach(s => s.classList.remove('visible'));
   slide.classList.add('visible');
+  [...slide.querySelectorAll('img')].forEach(i => {
+    // Restart gifs
+    const src = i.src;
+    i.src = '';
+    i.src = src;
+  })
   slide.scrollTop = 0;
 };
 const showModal = () => {
