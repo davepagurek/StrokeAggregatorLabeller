@@ -5,6 +5,46 @@ const sequence = (window.location.hash && sequences[window.location.hash.slice(1
 const sequenceLength = sequence.length;
 const next = document.getElementById('next');
 
+const modal = document.getElementById('modal');
+const modalSlides = [...modal.querySelectorAll('.slide')];
+const modalNext = document.getElementById('modal-next');
+const modalPrev = document.getElementById('modal-prev');
+const showModalSlide = slide => {
+  if (!slide) return;
+
+  if (slide.nextElementSibling) {
+    modalNext.innerText = 'Next';
+  } else {
+    modalNext.innerText = 'Start labelling';
+  }
+  modalPrev.disabled = !slide.previousElementSibling;
+  modalSlides.forEach(s => s.classList.remove('visible'));
+  slide.classList.add('visible');
+  slide.scrollTop = 0;
+};
+const showModal = () => {
+  modal.classList.remove('hidden');
+  showModalSlide(modalSlides[0]);
+};
+const hideModal = () => {
+  modal.classList.add('hidden');
+};
+modalNext.addEventListener('click', () => {
+  const newSlide = modal.querySelector('.slide.visible').nextElementSibling;
+  console.log(newSlide);
+  if (newSlide) {
+    showModalSlide(newSlide);
+  } else {
+    hideModal();
+  }
+});
+modalPrev.addEventListener('click', () => {
+  showModalSlide(modal.querySelector('.slide.visible').previousElementSibling);
+});
+
+document.getElementById('modal-close').addEventListener('click', hideModal);
+document.getElementById('help').addEventListener('click', showModal);
+
 const COUNTDOWN_LENGTH = 20;
 const HIGHLIGHT_TIME = 800;
 let startTime = null;

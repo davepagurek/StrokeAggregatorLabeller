@@ -3,29 +3,60 @@
   box-sizing: border-box;
   top: 50%;
   left: 50%;
-  margin-left: -300px;
-  margin-top: -200px;
-  width: 600px;
-  height: 400px;
+  margin-left: -400px;
+  margin-top: -300px;
+  width: 800px;
+  height: 600px;
   padding: 10px;
   background-color: #FFF;
   border-radius: 4px;
-  box-shadow: 4px 0 15px rgba(0,0,0,0.25);
+  box-shadow: 0 4px 25px rgba(0,0,0,0.5);
   display: flex;
   flex-direction: column;
   z-index: 999;
-  overflow-y: auto;
 }
+#modal h1 {
+  font-size: 22px;
+  text-align: left;
+  margin: 0;
+}
+/*#modal button#modal-close {*/
+  /*background-color: #D44;*/
+  /*color: #FFF;*/
+/*}*/
 #modal .slide {
   display: none;
 }
+#modal .row {
+  position: relative;
+}
+.flex {
+  display: flex;
+}
 #modal .slide.visible {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
   display: flex;
   flex-direction: column;
+  overflow-y: auto;
+}
+#modal .slide p {
+  text-align: left;
 }
 #modal .slide img {
-  max-width: 100%;
-  height: auto;
+  max-width: 750px;
+  max-height: 300px;
+  border: 4px solid #999;
+  margin-bottom: 10px;
+}
+#modal .slide img.big {
+  max-height: 420px;
+}
+#modal.hidden {
+  display: none;
 }
 
 #brushIndicator {
@@ -63,6 +94,9 @@ a {
 .row {
   margin-bottom: 10px;
   text-align: center;
+}
+.fill {
+  flex: 1;
 }
 
 #modes {
@@ -316,6 +350,7 @@ section#header {
 }
 section#header p {
   margin: 5px;
+  flex: 1;
 }
 #editor {
   flex: 1;
