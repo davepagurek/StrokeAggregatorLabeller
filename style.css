@@ -1,3 +1,39 @@
+#modal {
+  position: absolute;
+  box-sizing: border-box;
+  top: 50%;
+  left: 50%;
+  margin-left: -300px;
+  margin-top: -200px;
+  width: 600px;
+  height: 400px;
+  padding: 10px;
+  background-color: #FFF;
+  border-radius: 4px;
+  box-shadow: 4px 0 15px rgba(0,0,0,0.25);
+  display: flex;
+  flex-direction: column;
+  z-index: 999;
+  overflow-y: auto;
+}
+#modal .slide {
+  display: none;
+}
+#modal .slide.visible {
+  display: flex;
+  flex-direction: column;
+}
+#modal .slide img {
+  max-width: 100%;
+  height: auto;
+}
+
+#brushIndicator {
+  transition: stroke-width ease 0.2s;
+}
+#brushIndicator.mousedown {
+  stroke-width: 6 !important;
+}
 a {
   color: blue;
   text-decoration: underline;

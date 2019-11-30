@@ -539,6 +539,14 @@ const setupLabeller = (name, svg) => {
   svg.addEventListener('mousemove', (event) => {
     const target = handleMouseMove(event);
   });
+  svg.addEventListener('mousedown', () => {
+    brushIndicator.classList.add('mousedown');
+    const onMouseUp = () => {
+      brushIndicator.classList.remove('mousedown');
+      document.removeEventListener('mouseup', onMouseUp);
+    };
+    document.addEventListener('mouseup', onMouseUp);
+  });
   svg.addEventListener('click', (event) => {
     if (uiData.animationTimer !== null) {
       return handleEscape();
