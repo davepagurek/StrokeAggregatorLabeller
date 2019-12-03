@@ -120,26 +120,27 @@ a {
 .current-mode.mode-break { background-color: #FF8C00; }
 .current-mode.mode-merge { background-color: #FF2D00; }
 .current-mode.mode-split { background-color: #04756F; }
+.current-mode.mode-selector { background-color: #6F0475; }
 .current-mode.mode-animation { background-color: #2E0927; }
-.mode-merge, .mode-split, .mode-animation, .mode-break {
+.mode-merge, .mode-split, .mode-animation, .mode-break, .mode-selector {
   display: none;
 }
-.highlighting .mode-animation, .split:not(.highlighting) .mode-split, .merge:not(.highlighting) .mode-merge, .breaking:not(.highlighting) .mode-break {
+.highlighting .mode-animation, .selector:not(.highlighting) .mode-selector, .split:not(.highlighting) .mode-split, .merge:not(.highlighting) .mode-merge, .breaking:not(.highlighting) .mode-break {
   display: block;
 }
 
 .space {
   height: 20px;
 }
-#merge, #split, #confirm, #break {
+#merge, #split, #confirm, #break, #selector {
   opacity: 0.4;
   cursor: default;
 }
-.unselected #merge, .unselected #split, .unselected #break {
+.unselected #merge, .unselected #split, .unselected #break, .unselected #selector {
   opacity: 1;
   cursor: pointer;
 }
-.merge #merge, .split #split, .breaking #break {
+.merge #merge, .split #split, .breaking #break, .selector #selector {
   background-color: #333;
   color: #FFF;
   opacity: 1;

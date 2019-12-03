@@ -33,7 +33,7 @@
           <div><img class="big" src="img/save.gif" /></div>
         </div>
         <div class="slide">
-          <p>To make sure your groups are correct, click "Animate Groups" to highlight groups one by one. You can also use the merge tool to select a group to highlight everything in that group.</p>
+          <p>To make sure your groups are correct, click "Animate Groups" to highlight groups one by one. You can also use the selection tool to select a group to highlight everything in that group.</p>
           <div><img class="big" src="img/checking.gif" /></div>
         </div>
         <div class="slide">
@@ -71,11 +71,13 @@
     </div>
     <div id="app" class="column">
       <section id="header">
+        <div class="current-mode mode-selector">Highlight mode</div>
         <div class="current-mode mode-merge">Merge mode</div>
         <div class="current-mode mode-split">Split mode</div>
         <div class="current-mode mode-animation">Animation mode</div>
         <div class="current-mode mode-break">Break mode</div>
-        <p class="mode-merge">Group strokes together that you feel were intended to depict the same intended curve.</p>
+        <p class="mode-selector">Click groups to ensure that all strokes in them are intended to depict the same curve.</p>
+        <p class="mode-merge">Group strokes together that you feel were intended to depict the same curve.</p>
         <p class="mode-split">Select some strokes in this group and then press [C] to turn them into their own group.</p>
         <p class="mode-break">Click on a stroke, then move the mouse to position the break. Click to confirm.</p>
         <p class="mode-animation">Make sure that nothing is accidentally grouped that should be kept separate.</p>
@@ -117,6 +119,7 @@
           </div>
 
           <div id="modes" class="row">
+            <button id="selector">[H] Highlight Groups</button>
             <button id="merge">[M] Merge Groups</button>
             <button id="split">[S] Split Groups</button>
             <button id="break">[B] Break Stroke</button>

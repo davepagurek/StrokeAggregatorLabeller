@@ -104,19 +104,18 @@ const notify = p => {
 
 let brushIndicator = null;
 let breakIndicator = null;
-const uiData = { selectionMode: 'merge', animationTimer: null };
+const uiData = { selectionMode: 'selector', animationTimer: null };
 
 function setSelectionMode(mode) {
   document.body.classList.remove('merge');
   document.body.classList.remove('split');
   document.body.classList.remove('breaking');
+  document.body.classList.remove('selector');
   const changed = mode !== uiData.selectionMode;
   document.body.classList.add(mode);
   uiData.selectionMode = mode;
   if (changed) handleEscape();
 }
-
-setSelectionMode('merge');
 
 const undoStack = [];
 const redoStack = [];
@@ -209,12 +208,15 @@ const state = {
     state.splits = newState.splits;
     if (state.breakAt) {
       handleEscape();
+      setSelectionMode('selector');
     }
     if (state.selection && !newState.groups[state.selection]) {
       handleEscape();
+      setSelectionMode('selector');
     }
     if (state.subSelection && state.subSelection.some(p => !newState.groups[state.selection].includes(p))) {
       handleEscape();
+      setSelectionMode('selector');
     }
     state.setState({ groups: newState.groups }, true);
   },
@@ -595,12 +597,22 @@ const setupLabeller = (name, svg) => {
   });
   svg.addEventListener('click', (event) => {
     if (uiData.animationTimer !== null) {
-      return handleEscape();
+      handleEscape();
+      setSelectionMode('selector');
+      return;
     }
 
     const target = handleMouseMove(event);
     let paths = state.getPathsNear(target, state.radius+1);
-    if (uiData.selectionMode === 'merge') {
+    if (uiData.selectionMode === 'selector') {
+      if (paths.length > 0) {
+        document.body.classList.remove('unselected');
+        handleEscape();
+        state.setState({ merge: false, split: false, selection: state.getGroup(paths[0]) });
+      } else {
+        handleEscape();
+      }
+    } else if (uiData.selectionMode === 'merge') {
       if (paths.length > 0) {
         document.body.classList.remove('unselected');
         if (!state.merge || !state.selection) {
@@ -624,6 +636,7 @@ const setupLabeller = (name, svg) => {
         }
       } else {
         handleEscape();
+        setSelectionMode('selector');
       }
     } else if (uiData.selectionMode === 'split') {
       if (paths.length > 0) {
@@ -656,6 +669,7 @@ const setupLabeller = (name, svg) => {
         }
       } else {
         handleEscape();
+        setSelectionMode('selector');
       }
     } else if (uiData.selectionMode === 'breaking') {
       if (state.selection && state.subSelection.length === 1) {
@@ -688,6 +702,7 @@ const setupLabeller = (name, svg) => {
           state.setState({ breakAt: (range[1]+range[0])/2 });
         } else {
           handleEscape();
+          setSelectionMode('selector');
         }
       } else if (paths.length > 0 && state.subSelection.length === 0) {
         let minDist = Infinity;
@@ -708,6 +723,7 @@ const setupLabeller = (name, svg) => {
 
     } else {
       handleEscape();
+      setSelectionMode('selector');
     }
   });
 
@@ -817,6 +833,9 @@ const handleConfirm = () => {
       handleBreak();
     }
   }
+
+  handleEscape();
+  setSelectionMode('selector');
 };
 
 function handleEscape() {
@@ -873,8 +892,9 @@ document.addEventListener('keydown', (event) => {
   } else if (event.key === '4' || event.key === 'b') {
     setSelectionMode('breaking');
     //handleBreak();
-  } else if (event.key === 'Escape') {
+  } else if (event.key === 'Escape' || event.key === 'h') {
     handleEscape();
+    setSelectionMode('selector');
   } else if ((event.metaKey || event.ctrlKey) && event.key === 'z' && !event.shiftKey) {
     event.preventDefault();
     event.stopPropagation();
@@ -902,7 +922,11 @@ document.getElementById('merge').addEventListener('click', () => setSelectionMod
 document.getElementById('split').addEventListener('click', () => setSelectionMode('split'));
 document.getElementById('confirm').addEventListener('click', handleConfirm);
 document.getElementById('break').addEventListener('click', () => setSelectionMode('breaking'));
-document.getElementById('escape').addEventListener('click', handleEscape);
+document.getElementById('selector').addEventListener('click', () => setSelectionMode('selector'));
+document.getElementById('escape').addEventListener('click', () => {
+  handleEscape();
+  setSelectionMode('selector');
+});
 document.getElementById('redownload').addEventListener('click', () => {
   Object.keys(downloads).forEach(filename => download(downloads[filename], filename));
 });
@@ -1161,6 +1185,7 @@ next.addEventListener('click', () => {
   }
 });
 loadInput();
+setSelectionMode('selector');
 //sequence.forEach((name, i) => {
   //const option = document.createElement('option');
   //option.innerText = name;
