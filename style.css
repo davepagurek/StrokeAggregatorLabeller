@@ -1,3 +1,26 @@
+#progress-container {
+  height: auto;
+  position: relative;
+  width: 200px;
+  box-sizing: border-box;
+  background-color: #EEE;
+  margin-top:10px;
+}
+#progress {
+  display: block;
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  background-color: #8AF;
+  z-index: 1;
+}
+#remaining {
+  position: relative;
+  z-index: 2;
+  margin: 5px;
+}
+
 #modal {
   position: absolute;
   box-sizing: border-box;
@@ -339,7 +362,7 @@ button[disabled]:hover {
   box-shadow: none;
 }
 button#next {
-  padding: 40px;
+  padding: 20px;
 }
 button#next:not([disabled]) {
   background-color: #ddfdb3;

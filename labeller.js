@@ -20,6 +20,8 @@ const showModalSlide = slide => {
   modalPrev.disabled = !slide.previousElementSibling;
   modalSlides.forEach(s => s.classList.remove('visible'));
   slide.classList.add('visible');
+  document.getElementById('tutorial-title').innerText =
+    slide.classList.contains('task') ? 'The Labelling Task' : 'Using the Tool';
   [...slide.querySelectorAll('img')].forEach(i => {
     // Restart gifs
     const src = i.src;
@@ -49,7 +51,11 @@ modalPrev.addEventListener('click', () => {
 });
 
 document.getElementById('modal-close').addEventListener('click', hideModal);
-document.getElementById('help').addEventListener('click', showModal);
+document.getElementById('help-task').addEventListener('click', showModal);
+document.getElementById('help-tool').addEventListener('click', () => {
+  showModal();
+  showModalSlide(modal.querySelector('.slide:not(.task)'));
+});
 
 const COUNTDOWN_LENGTH = 20;
 const HIGHLIGHT_TIME = 800;
@@ -1149,6 +1155,7 @@ const loadInput = () => {
           reference.appendChild(refSVG);
 
           document.getElementById('remaining').innerText = `Sketch ${sequenceLength-sequence.length+1}/${sequenceLength}`;
+          document.getElementById('progress').setAttribute('style', `width: ${Math.round((sequenceLength-sequence.length+1)/sequenceLength*100)}%`);
           //svgContainer.innerHTML = src;
         } else {
           window.requestAnimationFrame(incrementalWork);

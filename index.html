@@ -8,50 +8,63 @@
   <body class="first-selection first-split">
     <div id="modal">
       <div class="row flex">
-        <h1 class="row fill">Labelling Help</h1>
-        <button id='modal-close'>&times;</button>
+        <h1 class="row fill" id="tutorial-title">The Labelling Task</h1>
+        <button id="modal-close">&times;</button>
       </div>
       <div class="row fill">
-        <div class="slide visible">
+        <div class="slide task visible">
           <p>You will be shown sketches containing overdrawn strokes. Some of these overdrawn strokes can be grouped together to depict the same clean curve (see the example below). For each sketch, take your time to <strong>observe and mentally group</strong> the strokes. When ready, you will see a grouping of the same sketch indicated by different colors. Your task is to <strong>modify this grouping</strong> to match the grouping constructed in your mind.</p>
           <img src="img/labels.png" />
         </div>
-        <div class="slide">
+        <div class="slide task">
+          <p>You will be shown sketches containing overdrawn strokes. Some of these overdrawn strokes can be grouped together to depict the same clean curve (see the example below). For each sketch, take your time to <strong>observe and mentally group</strong> the strokes. When ready, you will see a grouping of the same sketch indicated by different colors. Your task is to <strong>modify this grouping</strong> to match the grouping constructed in your mind.</p>
           <div class="row flex">
             <div class="column fill"><div><img src="img/shading.png" /></div></div>
             <div class="column fill"><div><img src="img/sharpsplit.png" /></div></div>
           </div>
+        </div>
+        <div class="slide task">
+          <p>You will be shown sketches containing overdrawn strokes. Some of these overdrawn strokes can be grouped together to depict the same clean curve (see the example below). For each sketch, take your time to <strong>observe and mentally group</strong> the strokes. When ready, you will see a grouping of the same sketch indicated by different colors. Your task is to <strong>modify this grouping</strong> to match the grouping constructed in your mind.</p>
           <div><img src="img/sharp.png" /></div>
         </div>
-        <div class="slide">
+        <div class="slide task">
+          <p>You will be shown sketches containing overdrawn strokes. Some of these overdrawn strokes can be grouped together to depict the same clean curve (see the example below). For each sketch, take your time to <strong>observe and mentally group</strong> the strokes. When ready, you will see a grouping of the same sketch indicated by different colors. Your task is to <strong>modify this grouping</strong> to match the grouping constructed in your mind.</p>
           <div><img src="img/bunny.png" /></div>
+        </div>
+        <div class="slide task">
+          <p>You will be shown sketches containing overdrawn strokes. Some of these overdrawn strokes can be grouped together to depict the same clean curve (see the example below). For each sketch, take your time to <strong>observe and mentally group</strong> the strokes. When ready, you will see a grouping of the same sketch indicated by different colors. Your task is to <strong>modify this grouping</strong> to match the grouping constructed in your mind.</p>
           <div><img src="img/bunnydetail.png" /></div>
         </div>
-        <div class="slide">
+        <div class="slide task">
           <p>Once finished a drawing, you can click the button at the bottom of the right sidebar labelled "Save and Next." This will download one file per drawing. Your browser may ask for permission to download. Make sure to accept this.</p>
           <p>If you want to stop the entire session before finishing, you can click "Save and Exit." This will skip all the remaining drawings.</p>
           <div><img class="big" src="img/save.gif" /></div>
         </div>
         <div class="slide">
-          <p>To make sure your groups are correct, click "Animate Groups" to highlight groups one by one. You can also use the selection tool to select a group to highlight everything in that group.</p>
           <div><img class="big" src="img/checking.gif" /></div>
         </div>
         <div class="slide">
-          <p>To merge groups, use the <strong>merge tool</strong> by clicking "Merge Groups." Click on a group to select it. Then, click on other groups to toggle whether or not to merge them into the first group. Clicking "Confirm Change" will apply the merge. Clicking "Discard Change" or clicking a blank area will deselect everything.</p>
           <div><img class="big" src="img/merge.gif" /></div>
         </div>
         <div class="slide">
-          <p>To split strokes out of a group, use the <strong>split tool</strong> by clicking "Split Groups." Click on a group to select it. Then, click on strokes in the group to toggle whether or not you would like to separate them. Clicking "Confirm Change" will apply the split. Clicking "Discard Change" or clicking a blank area will deselect everything.</p>
           <div><img class="big" src="img/split.gif" /></div>
         </div>
         <div class="slide">
-          <p>To break a stroke into two strokes that can be grouped separately, use the <strong>break tool</strong> by clicking "Break Stroke." Click on a stroke to select it. Then, click along the stroke to place the point where a cut will be made. Clicking "Confirm Change" will turn it into two strokes. Clicking "Discard Change" or clicking a blank area will deselect everything.</p>
           <div><img class="big" src="img/break.gif" /></div>
         </div>
         <div class="slide">
-          <p>At any time, use the <strong>undo/redo</strong> buttons to step through your edit history.</p>
-          <p>You may also want to use the <strong>selection radius</strong> dropdown menu and the <strong>zoom in/out</strong> buttons to make more careful edits.</p>
-          <div><img src="img/precision.png" /></div>
+          <div class="row flex">
+            <div class="column fill">
+              <p>At any time, use the <strong>undo/redo</strong> buttons to step through your edit history.</p>
+              <p>You may also want to use the <strong>selection radius</strong> dropdown menu and the <strong>zoom in/out</strong> buttons to make more careful edits.</p>
+              <p></p>
+              <p></p>
+              <p>Open this tutorial again at any time by clicking the <strong>Show Task Help</strong> or <strong>Show Tool Help</strong> buttons.</p>
+            </div>
+            <div class="column fill">
+              <div><img src="img/sidebar.png" style="max-height: 480px !important" /></div>
+            </div>
+          </div>
         </div>
       </div>
       <div class="row">
@@ -81,7 +94,6 @@
         <p class="mode-split">Select some strokes in this group and then press [C] to turn them into their own group.</p>
         <p class="mode-break">Click on a stroke, then move the mouse to position the break. Click to confirm.</p>
         <p class="mode-animation">Make sure that nothing is accidentally grouped that should be kept separate.</p>
-        <button id="help">Show Help</button>
       </section>
 
       <section id="editor">
@@ -132,13 +144,20 @@
             <button id="animate">Animate groups</button>
           </div>
           <div class="row sidebar-expand">
+            <button id="help-task">Show Task Help</button>
+            <button id="help-tool">Show Tool Help</button>
+          </div>
+          <div class="row sidebar-expand">
             <button id="incomplete">
               Save and Exit
             </button>
             <button disabled id="next" disabled>
               Save and Next
             </button>
-            <p id="remaining"></p>
+            <div id="progress-container">
+              <p id="remaining"></p>
+              <div id="progress"></div>
+            </div>
         </div>
       </section>
     </div>
