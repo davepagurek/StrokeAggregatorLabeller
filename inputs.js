@@ -60,6 +60,9 @@ const sequences = {
     "old_set/TriceratopsArtistC02fxd02_c_1_u_1_h_t_result_proximity.scap",
     "old_set/Tucanfxd01_c_1_u_1_h_t_result_proximity.scap",
   ],
+  "oldset1-ending": [
+    "old_set/Tucanfxd01_c_1_u_1_h_t_result_proximity.scap",
+  ],
   "oldset2": [
     "old_set/archi10c_c_1_u_1_h_t_result_proximity.scap",
     "old_set/building_c_1_u_1_h_t_result_proximity.scap",
