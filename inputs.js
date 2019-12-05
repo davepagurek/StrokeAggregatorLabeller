@@ -9,7 +9,7 @@ const sequences = {
   "2": [
     "data/BowTie01_tutorial.scap",
     "data/Professional2_house_view2_presentation_t_m_result_cluster.scap",
-    "data/Professional3_potato_chip_view1_concept_t_m_result_cluster.scap",
+    "data/Professional3_potato_chip_view1_presentation_t_m_result_cluster.scap",
     "data/03sketch_t_m_result_cluster.scap",
     "data/mug_t_m_result_cluster.scap",
   ],
