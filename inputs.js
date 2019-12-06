@@ -37,6 +37,18 @@ const sequences = {
     "data/hamstertoon_t_m_result_cluster.scap",
     "data/student3_house_view1_concept_t_m_result_cluster.scap",
   ],
+  "7": [
+    "data/BowTie01_tutorial.scap",
+    "data/02sketch_t_m_result_cluster.scap",
+    "data/08sketch_t_m_result_cluster.scap",
+    "data/09sketch_t_m_result_cluster.scap",
+    "data/student1_wobble_surface_view1_concept_t_m_result_cluster.scap",
+  ],
+  "8": [
+    "data/BowTie01_tutorial.scap",
+    "data/04sketch_t_m_result_cluster.scap",
+    "data/lionhat_t_m_result_cluster.scap",
+  ],
   "oldset1": [
     "old_set/12345_c_1_u_1_h_t_result_proximity.scap",
     "old_set/BB04_c_1_u_0_h_t_result_proximity.scap",
