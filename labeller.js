@@ -1076,6 +1076,7 @@ const loadInput = () => {
   while (svgContainer.firstChild) svgContainer.removeChild(svgContainer.firstChild);
   while (reference.firstChild) reference.removeChild(reference.firstChild);
   const loader = document.createElement('h2');
+  loader.classList.add('loader');
   loader.innerText = 'Processing...';
   reference.appendChild(loader);
 

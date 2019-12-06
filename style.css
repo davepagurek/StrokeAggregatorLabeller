@@ -1,3 +1,6 @@
+.loader {
+  animation: loader 3s infinite normal linear;
+}
 #progress-container {
   height: auto;
   position: relative;
@@ -419,6 +422,13 @@ body:not(.timer) #reference svg {
 @keyframes pulse {
   50% {
     background-color: #FF8C00;
-    /*opacity: 0.05;*/
+  }
+}
+@keyframes loader {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.2;
   }
 }
