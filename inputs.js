@@ -56,6 +56,13 @@ const sequences = {
     "data/04sketch_t_m_result_cluster.scap",
     "data/05sketch_t_m_result_cluster.scap",
   ],
+  "10": [
+    "data/BowTie01_tutorial.scap",
+    "data/Professional1_mixer_view2_presentation_t_m_result_cluster.scap",
+    "data/Professional3_potato_chip_view1_presentation_t_m_result_cluster.scap",
+    "data/student1_wobble_surface_view1_concept_t_m_result_cluster.scap",
+    "data/student3_house_view1_presentation_t_m_result_cluster.scap",
+  ],
   "oldset1": [
     "old_set/12345_c_1_u_1_h_t_result_proximity.scap",
     "old_set/BB04_c_1_u_0_h_t_result_proximity.scap",
