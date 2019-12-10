@@ -60,7 +60,7 @@ const sequences = {
     "data/BowTie01_tutorial.scap",
     "data/Professional1_mixer_view2_presentation_t_m_result_cluster.scap",
     "data/Professional3_potato_chip_view1_presentation_t_m_result_cluster.scap",
-    "data/student1_wobble_surface_view1_concept_t_m_result_cluster.scap",
+    "data/student1_wobble_surface_view1_presentation_t_m_result_cluster.scap",
     "data/student3_house_view1_presentation_t_m_result_cluster.scap",
   ],
   "oldset1": [
