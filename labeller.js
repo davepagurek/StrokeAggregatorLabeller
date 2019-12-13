@@ -383,7 +383,11 @@ const state = {
 
   newGroup: (surrounding = []) => {
     let c = makeColor();
-    while (state.groups[c] || surrounding.find(color => tooClose(color, c))) c = makeColor();
+    let attempts = 1;
+    while (state.groups[c] || (attempts < 20 && surrounding.find(color => tooClose(color, c)))) {
+      c = makeColor();
+      attempts++;
+    }
 
     return c;
   },
