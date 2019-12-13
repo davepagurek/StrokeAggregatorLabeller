@@ -71,7 +71,7 @@ const sequences = {
     "fashion/Artist_01_Sketch_01_t_m_result_cluster.scap",
     "fashion/Artist_01_Sketch_02_t_m_result_cluster.scap",
     "fashion/Artist_02_Sketch_01_t_m_result_cluster.scap",
-    "fashion/Artist_02_Sketch_02_t_m_result_cluster.scap",
+    //"fashion/Artist_02_Sketch_02_t_m_result_cluster.scap", // TODO this takes too long
   ],
   "12": [
     "data/BowTie01_tutorial.scap",
