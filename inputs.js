@@ -148,8 +148,8 @@ const sequences = {
     "data/BowTie01_tutorial.scap",
     "old_set/Bug02Fxd_c_1_u_1_h_t_result_proximity.scap",
     "old_set/Bunny02Fxd_c_1_u_1_h_t_result_proximity.scap",
-    "old_set/Bunny05_c_1_u_1_h_t_result_proximity.scap",
-    "old_set/Bunny08fxd01c_c_1_u_1_h_t_result_proximity.scap",
+    "old_set/fish_c_1_u_1_h_t_result_proximity.scap",
+    "old_set/grandpa_c_1_u_1_h_t_result_proximity.scap",
   ],
   "o3": [
     "data/BowTie01_tutorial.scap",
@@ -183,15 +183,15 @@ const sequences = {
     "data/BowTie01_tutorial.scap",
     "old_set/duck_c_1_u_1_h_t_result_proximity.scap",
     "old_set/fairydenc_c_1_u_1_h_t_result_proximity.scap",
-    "old_set/fish_c_1_u_1_h_t_result_proximity.scap",
     "old_set/fruit_c_1_u_0_h_t_result_proximity.scap",
+    "old_set/Bunny05_c_1_u_1_h_t_result_proximity.scap",
   ],
   "o8": [
     "data/BowTie01_tutorial.scap",
     "old_set/geometry_c_1_u_1_h_t_result_proximity.scap",
     "old_set/giraffe_c_1_u_1_h_t_result_proximity.scap",
     "old_set/girl_c_1_u_1_h_t_result_proximity.scap",
-    "old_set/grandpa_c_1_u_1_h_t_result_proximity.scap",
+    "old_set/Bunny08fxd01c_c_1_u_1_h_t_result_proximity.scap",
   ],
   "o9": [
     "data/BowTie01_tutorial.scap",
