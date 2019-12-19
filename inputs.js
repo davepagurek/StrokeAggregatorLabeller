@@ -139,10 +139,10 @@ const sequences = {
   ],
   "o1": [
     "data/BowTie01_tutorial.scap",
-    "old_set/12345_c_1_u_1_h_t_result_proximity.scap",
     "old_set/yz_c_1_u_1_h_t_result_proximity.scap",
     "old_set/BB04_c_1_u_0_h_t_result_proximity.scap",
     "old_set/Bee02_c_1_u_1_h_t_result_proximity.scap",
+    "old_set/Pig02fxd01_c_1_u_1_h_t_result_proximity.scap",
   ],
   "o2": [
     "data/BowTie01_tutorial.scap",
@@ -168,7 +168,7 @@ const sequences = {
   "o5": [
     "data/BowTie01_tutorial.scap",
     "old_set/Pig01c_c_1_u_1_h_t_result_proximity.scap",
-    "old_set/Pig02fxd01_c_1_u_1_h_t_result_proximity.scap",
+    "old_set/12345_c_1_u_1_h_t_result_proximity.scap",
     "old_set/SharkArtistC02fxd01_c_1_u_1_h_t_result_proximity.scap",
     "old_set/TriceratopsArtistC02fxd02_c_1_u_1_h_t_result_proximity.scap",
   ],
