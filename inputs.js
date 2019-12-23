@@ -27,24 +27,20 @@ const sequences = {
     "data/Professional2_house_view2_concept_t_m_result_cluster.scap",
     "data/05sketch_t_m_result_cluster.scap",
   ],
-  "11": [
-    "data/Professional2_house_view2_concept_t_m_result_cluster.scap",
-  ],
   "5": [
     "data/BowTie01_tutorial.scap",
     "data/plushie1_t_m_result_cluster.scap",
-    "data/clock_c_1_u_1_h_t_result_proximity.scap",
+    "fashion/Artist_03_Sketch_02_t_m_result_cluster.scap",
+    "fashion/Artist_03_Sketch_06_t_m_result_cluster.scap",
   ],
   "6": [
     "data/BowTie01_tutorial.scap",
     "data/hamstertoon_t_m_result_cluster.scap",
-    "data/student3_house_view1_concept_t_m_result_cluster.scap",
+    "data/clock_c_1_u_1_h_t_result_proximity.scap",
   ],
-  // todo send 7 and 8 later
   "7": [
     "data/BowTie01_tutorial.scap",
     "data/02sketch_t_m_result_cluster.scap",
-    "data/08sketch_t_m_result_cluster.scap",
     "data/09sketch_t_m_result_cluster.scap",
     "data/student1_wobble_surface_view1_concept_t_m_result_cluster.scap",
   ],
@@ -72,7 +68,6 @@ const sequences = {
     "fashion/Artist_01_Sketch_01_t_m_result_cluster.scap",
     "fashion/Artist_01_Sketch_02_t_m_result_cluster.scap",
     "fashion/Artist_02_Sketch_01_t_m_result_cluster.scap",
-    //"fashion/Artist_02_Sketch_02_t_m_result_cluster.scap", // TODO this takes too long
   ],
   "12": [
     "data/BowTie01_tutorial.scap",
@@ -84,8 +79,23 @@ const sequences = {
   "13": [
     "data/BowTie01_tutorial.scap",
     "fashion/Artist_02_Sketch_05_t_m_result_cluster.scap",
+    "data/student3_house_view1_concept_t_m_result_cluster.scap",
     "fashion/Artist_02_Sketch_06_t_m_result_cluster.scap",
     "fashion/Artist_02_Sketch_07_t_m_result_cluster.scap",
+  ],
+  "14": [
+    "data/BowTie01_tutorial.scap",
+    "data/08sketch_t_m_result_cluster.scap",
+    "fashion/Artist_02_Sketch_08_t_m_result_cluster.scap",
+    "fashion/Artist_02_Sketch_09_t_m_result_cluster.scap",
+    "fashion/Artist_03_Sketch_01_t_m_result_cluster.scap",
+  ],
+  "15": [
+    "data/BowTie01_tutorial.scap",
+    "fashion/Artist_03_Sketch_03_t_m_result_cluster.scap",
+    "fashion/Artist_03_Sketch_04_t_m_result_cluster.scap",
+    "fashion/Artist_03_Sketch_05_t_m_result_cluster.scap",
+    "fashion/Artist_02_Sketch_02_t_m_result_cluster.scap",
   ],
   "oldset1": [
     "old_set/12345_c_1_u_1_h_t_result_proximity.scap",

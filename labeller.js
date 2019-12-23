@@ -1042,7 +1042,11 @@ const scapToSVG = function*(scap) {
     yield false;
 
     let c = makeColor();
-    while (colors[c] || surrounding.find(color => tooClose(color, c))) c = makeColor();
+    let attempts = 1;
+    while (colors[c] || (attempts < 20 && surrounding.find(color => tooClose(color, c)))) {
+      c = makeColor();
+      attempts++;
+    }
     colors[c] = true;
     groupColors[group] = c;
     yield false;
