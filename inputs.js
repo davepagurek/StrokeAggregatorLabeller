@@ -17,7 +17,7 @@ const sequences = {
     "data/BowTie01_tutorial.scap",
     "data/06sketch_t_m_result_cluster.scap",
     "data/11sketch_t_m_result_cluster.scap",
-    "data/hamstertoon_t_m_result_cluster.scap",
+    "fashion/Artist_03_Sketch_05_t_m_result_cluster.scap",
     "data/student3_house_view1_concept_t_m_result_cluster.scap",
   ],
   "4": [
@@ -96,6 +96,12 @@ const sequences = {
     "fashion/Artist_03_Sketch_04_t_m_result_cluster.scap",
     "fashion/Artist_03_Sketch_05_t_m_result_cluster.scap",
     "fashion/Artist_02_Sketch_02_t_m_result_cluster.scap",
+  ],
+  "15b": [
+    "data/BowTie01_tutorial.scap",
+    "fashion/Artist_03_Sketch_03_t_m_result_cluster.scap",
+    "fashion/Artist_03_Sketch_04_t_m_result_cluster.scap",
+    "data/lionhat_t_m_result_cluster.scap",
   ],
   "oldset1": [
     "old_set/12345_c_1_u_1_h_t_result_proximity.scap",
