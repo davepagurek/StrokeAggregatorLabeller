@@ -254,6 +254,14 @@ const sequences = {
     "remaining/circles_SA_cluster.scap",
     "remaining/Giraffe03_SA_cluster.scap",
   ],
+  "forsilver": [
+    "fashion/Artist_02_Sketch_01_t_m_result_cluster.scap",
+    "fashion/Artist_02_Sketch_02_t_m_result_cluster.scap",
+    "fashion/Artist_02_Sketch_03_t_m_result_cluster.scap",
+    "fashion/Artist_02_Sketch_04_t_m_result_cluster.scap",
+    "fashion/Artist_02_Sketch_08_t_m_result_cluster.scap",
+    "fashion/Artist_02_Sketch_09_t_m_result_cluster.scap",
+  ],
   short: [
     "data/BowTie01_tutorial.scap",
   ],
