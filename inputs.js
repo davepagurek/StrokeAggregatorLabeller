@@ -263,12 +263,14 @@ const sequences = {
     "fashion/Artist_02_Sketch_09_t_m_result_cluster.scap",
   ],
   "remaining_fashion": [
+    "data/BowTie01_tutorial.scap",
     "fashion/Artist_01_Sketch_03_t_m_result_cluster.scap",
     "fashion/Artist_01_Sketch_04_t_m_result_cluster.scap",
     "fashion/Artist_03_Sketch_01_t_m_result_cluster.scap",
     "fashion/Artist_03_Sketch_06_t_m_result_cluster.scap",
   ],
   "remaining_artist": [
+    "data/BowTie01_tutorial.scap",
     "data/plushie1_t_m_result_cluster.scap",
     "data/06sketch_t_m_result_cluster.scap",
     "data/11sketch_t_m_result_cluster.scap",
