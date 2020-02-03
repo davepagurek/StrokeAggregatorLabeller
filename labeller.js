@@ -868,12 +868,14 @@ function handleEscape() {
   setSelectionMode(currentMode);
 }
 
+const zoomFactor = 1.25;
+
 const zoomIn = () => {
   const svg = document.querySelector('#svgContainer svg');
   if (!svg) return;
   zoom++;
   zoomOutBtn.disabled = zoom == 1;
-  svg.setAttribute('width', svg.clientWidth*2);
+  svg.setAttribute('width', svg.clientWidth*zoomFactor);
 };
 
 const zoomOut = () => {
@@ -885,7 +887,7 @@ const zoomOut = () => {
   if (zoom == 1) {
     svg.removeAttribute('width');
   } else {
-    svg.setAttribute('width', Math.round(svg.clientWidth/2));
+    svg.setAttribute('width', Math.round(svg.clientWidth/zoomFactor));
   }
 };
 
