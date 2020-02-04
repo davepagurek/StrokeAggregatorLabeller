@@ -868,7 +868,7 @@ function handleEscape() {
   setSelectionMode(currentMode);
 }
 
-const zoomFactor = 1.25;
+const zoomFactor = 1.025;
 
 const zoomIn = () => {
   const svg = document.querySelector('#svgContainer svg');
