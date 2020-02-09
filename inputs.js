@@ -277,6 +277,18 @@ const sequences = {
     "data/08sketch_t_m_result_cluster.scap",
     "old_set/fruit_c_1_u_0_h_t_result_proximity.scap",
   ],
+  "aug_data": [
+    "data/BowTie01_tutorial.scap",
+    "aug_data/branch1.scap",
+    "aug_data/branch2.scap",
+    "aug_data/branch3.scap",
+    "aug_data/branch4.scap",
+    "aug_data/branch5.scap",
+    "aug_data/branch6.scap",
+    "aug_data/branch6.scap",
+    "aug_data/branch7.scap",
+    "aug_data/branch7.scap",
+  ],
   short: [
     "data/BowTie01_tutorial.scap",
   ],
