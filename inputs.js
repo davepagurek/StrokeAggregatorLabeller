@@ -285,9 +285,9 @@ const sequences = {
     "aug_data/branch4.scap",
     "aug_data/branch5.scap",
     "aug_data/branch6.scap",
-    "aug_data/branch6.scap",
     "aug_data/branch7.scap",
-    "aug_data/branch7.scap",
+    "aug_data/branch8.scap",
+    "aug_data/branch9.scap",
   ],
   short: [
     "data/BowTie01_tutorial.scap",
