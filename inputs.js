@@ -289,6 +289,20 @@ const sequences = {
     "aug_data/branch8.scap",
     "aug_data/branch9.scap",
   ],
+  "16": [
+    "data/BowTie01_tutorial.scap",
+    "ind/Professional1_bumps_view2_presentation_orig_cluster.scap",
+    "fashion/Artist_02_Sketch_05_t_m_result_cluster.scap",
+    "fashion/Artist_02_Sketch_06_t_m_result_cluster.scap",
+    "fashion/Artist_02_Sketch_07_t_m_result_cluster.scap",
+  ],
+  "17": [
+    "data/BowTie01_tutorial.scap",
+    "ind/Professional3_mouse_view1_presentation_orig_cluster.scap",
+    "ind/student7_shampoo_bottle_view1_presentation_orig_cluster.scap",
+    "ind/student3_waffle_iron_view1_presentation_orig_cluster.scap",
+    "ind/student4_potato_chip_view1_concept_orig_cluster.scap",
+  ],
   short: [
     "data/BowTie01_tutorial.scap",
   ],
