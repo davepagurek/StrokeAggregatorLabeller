@@ -306,5 +306,68 @@ const sequences = {
   short: [
     "data/BowTie01_tutorial.scap",
   ],
+  "new_init_1": [
+    "data/BowTie01_tutorial.scap",
+    "new_init_clusters/lion.scap",
+    "new_init_clusters/Artist_01_Sketch_03_apost.scap",
+    "new_init_clusters/Artist_01_Sketch_04_apost.scap",
+    "new_init_clusters/Artist_01_Sketch_01_apost.scap",
+    "new_init_clusters/Artist_01_Sketch_02_apost.scap",
+  ],
+  "new_init_2": [
+    "data/BowTie01_tutorial.scap",
+    "new_init_clusters/Artist_02_Sketch_03_apost.scap",
+    "new_init_clusters/Artist_02_Sketch_04_apost.scap",
+    "new_init_clusters/Professional1_hairdryer_view1_concept_apost.scap",
+    "new_init_clusters/Artist_03_Sketch_06_apost.scap",
+  ],
+  "new_init_3": [
+    "data/BowTie01_tutorial.scap",
+    "new_init_clusters/Artist_02_Sketch_06_apost.scap",
+    "new_init_clusters/Artist_02_Sketch_07_apost.scap",
+    "new_init_clusters/Artist_03_Sketch_01_apost.scap",
+  ],
+  "new_init_4": [
+    "data/BowTie01_tutorial.scap",
+    "new_init_clusters/Professional2_house_view2_presentation_apost.scap",
+    "new_init_clusters/Professional3_potato_chip_view1_presentation_apost.scap",
+    "new_init_clusters/student3_house_view1_presentation_apost.scap",
+    "new_init_clusters/Artist_02_Sketch_05_apost.scap",
+  ],
+  "new_init_5": [
+    "data/BowTie01_tutorial.scap",
+    "new_init_clusters/Professional1_mixer_view2_presentation_apost.scap",
+    "new_init_clusters/Professional2_house_view2_concept_apost.scap",
+    "new_init_clusters/Professional3_potato_chip_view1_concept_apost.scap",
+    "new_init_clusters/student1_wobble_surface_view1_presentation_apost.scap",
+  ],
+  "new_init_6": [
+    "data/BowTie01_tutorial.scap",
+    "new_init_clusters/02sketch_apost.scap",
+    "new_init_clusters/fruit_apost.scap",
+    "new_init_clusters/11sketch_apost.scap",
+    "new_init_clusters/mug_apost.scap",
+  ],
+  "new_init_7": [
+    "data/BowTie01_tutorial.scap",
+    "new_init_clusters/hand1_apost.scap",
+    "new_init_clusters/hamstertoon_apost.scap",
+    "new_init_clusters/plushie1_apost.scap",
+    "new_init_clusters/clock_apost.scap",
+  ],
+  "new_init_8": [
+    "data/BowTie01_tutorial.scap",
+    "new_init_clusters/03sketch_apost.scap",
+    "new_init_clusters/05sketch_apost.scap",
+    "new_init_clusters/06sketch_apost.scap",
+    "new_init_clusters/shesh_apost.scap",
+  ],
+  "new_init_9": [
+    "data/BowTie01_tutorial.scap",
+    "new_init_clusters/lion_apost.scap",
+    "new_init_clusters/04sketch_apost.scap",
+    "new_init_clusters/08sketch_apost.scap",
+    "new_init_clusters/09sketch_apost.scap",
+  ]
 };
 
