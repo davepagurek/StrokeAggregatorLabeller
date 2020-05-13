@@ -368,6 +368,14 @@ const sequences = {
     "new_init_clusters/04sketch_apost.scap",
     "new_init_clusters/08sketch_apost.scap",
     "new_init_clusters/09sketch_apost.scap",
-  ]
+  ],
+  "0512": [
+    "data/BowTie01_tutorial.scap",
+    "0512/Bunny08fxd01c.scap",
+    "0512/GOEagle03.scap",
+    "0512/Penguinfxd01.scap",
+    "0512/ring.scap",
+    "0512/TriceratopsArtistC02fxd02.scap",
+  ],
 };
 
