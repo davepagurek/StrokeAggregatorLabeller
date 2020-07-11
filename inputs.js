@@ -377,5 +377,8 @@ const sequences = {
     "0512/ring.scap",
     "0512/TriceratopsArtistC02fxd02.scap",
   ],
+  "fromscratch": [
+    "data/from_scratch.scap",
+  ],
 };
 
