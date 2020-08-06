@@ -265,6 +265,9 @@ a {
   transition: all linear 0.2s;
   fill: none;
 }
+#svgContainer path[data-ungrouped="true"] {
+  stroke: #999;
+}
 #svgContainer path.selected {
   stroke-width: 3px;
   stroke: #F0F;

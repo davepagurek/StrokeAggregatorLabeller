@@ -380,6 +380,9 @@ const sequences = {
   "fromscratch": [
     "data/from_scratch.scap",
   ],
+  "test_ungrouped": [
+    "data/BowTie01_tutorial_ungrouped.scap",
+  ],
   "alt1": [
     "data/BowTie01_tutorial.scap",
     "alt_init_clusters/Professional1_bumps_view2_presentation_apost.scap",

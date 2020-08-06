@@ -133,6 +133,7 @@ const undoKeys = new Set(['groups', 'splits'])
 const state = {
   paths: [], // References to all svg path elements onscreen
   groups: {}, // Path elements indexed by their colour
+  ungrouped: {}, // Colours representing ungrouped strokes
   pathSamples: new Map(),
   sampleLocations: [],
   selection: null, // The group currently selected
@@ -309,6 +310,7 @@ const state = {
               if (p.getAttribute('stroke') != color) {
                 notify(p);
                 p.setAttribute('stroke', color);
+                p.setAttribute('data-ungrouped', state.ungrouped[color])
               }
             });
 
@@ -455,6 +457,7 @@ const state = {
         polyline.slice(1).map(([x,y]) => `L ${x.toPrecision(6)} ${y.toPrecision(6)}`).join(' '));
       const group = state.newGroup([state.getGroup(path), ...newGroupColors]);
       newGroupColors.push(group);
+      element.setAttribute('data-ungrouped', state.ungrouped[group]);
       element.setAttribute('stroke', group);
       state.groups[group] = [ element  ];
       path.parentElement.insertBefore(element, path);
@@ -490,8 +493,13 @@ const generateScap = () => {
   let nextGroup = 0;
   const groupIndex = {};
   for (let group in state.groups) {
-    groupIndex[group] = nextGroup;
-    nextGroup++;
+    if (!state.groups[group]) continue;
+    //if (state.ungrouped[group]) {
+      //groupIndex[group] = -1;
+    //} else {
+      groupIndex[group] = nextGroup;
+      nextGroup++;
+    //}
   }
 
   return (
@@ -532,13 +540,17 @@ const animateGroups = () => {
   handleEscape();
 
   // Make our own copy of groups
-  const groups = {};
+  const groups = { '__ungrouped': [] };
   Object.keys(state.groups).forEach(group => {
     if (state.groups[group] && state.groups[group].length > 0) {
-      groups[group] = [...state.groups[group]];
+      if (state.ungrouped[group]) {
+        groups['__ungrouped'].push(...state.groups[group]);
+      } else {
+        groups[group] = [...state.groups[group]];
+      }
     }
   });
-  const remaining = Object.keys(groups);
+  const remaining = Object.keys(groups).sort();
 
   const highlightNext = () => {
     const group = remaining.pop();
@@ -777,11 +789,45 @@ const handleBreak = () => {
   }
 };
 
+const getSurroundingSelection = (oldSelection, paths) => {
+  const surrounding = [oldSelection];
+  for (let color in state.groups) {
+    if (!state.groups[color] || color == oldSelection) continue;
+
+    let minDist = Infinity;
+    state.subSelection.forEach(p1 => {
+      for (let t1 = 0; t1 <= 1; t1 += 0.25) {
+        const pt1 = p1.getPointAtLength(t1 * p1.getTotalLength());
+        state.groups[color].forEach(p2 => {
+          for (let t2 = 0; t2 <= 1; t2 += 0.25) {
+            const pt2 = p2.getPointAtLength(t2 * p2.getTotalLength());
+            minDist = Math.min(minDist, Math.hypot(pt2.x-pt1.x, pt2.y-pt1.y));
+          }
+        });
+      }
+    });
+
+    if (minDist < 10) {
+      surrounding.push(color);
+    }
+  }
+
+  return surrounding;
+};
+
 const handleConfirm = () => {
   if (!state.selection || state.subSelection.length === 0) return;
 
   if (uiData.selectionMode === 'merge') {
     let changed = false;
+    const oldSelection = state.selection;
+    let newGroup = state.selection;
+
+    if (state.ungrouped[newGroup]) {
+      const surrounding = getSurroundingSelection(oldSelection, state.subSelection)
+      newGroup = state.newGroup(surrounding);
+    }
+
     state.subSelection.forEach(path => {
       if (state.getGroup(path) !== state.selection) {
         changed = true;
@@ -798,6 +844,16 @@ const handleConfirm = () => {
       }
     });
     if (changed) {
+      if (newGroup !== oldSelection) {
+        state.setState({
+          groups: {
+            ...state.groups,
+            [ oldSelection ]: undefined,
+            [ newGroup ]: state.getGroupMembers(oldSelection)
+          },
+          selection: newGroup
+        });
+      }
       state.setState({ subSelection: [] }, true);
       state.commit();
     };
@@ -807,34 +863,14 @@ const handleConfirm = () => {
     const oldSelection = state.selection;
     state.setState({ selection: null });
 
-    const surrounding = [oldSelection];
-    for (let color in state.groups) {
-      if (!state.groups[color] || color == oldSelection) continue;
-
-      let minDist = Infinity;
-      state.subSelection.forEach(p1 => {
-        for (let t1 = 0; t1 <= 1; t1 += 0.25) {
-          const pt1 = p1.getPointAtLength(t1 * p1.getTotalLength());
-          state.groups[color].forEach(p2 => {
-            for (let t2 = 0; t2 <= 1; t2 += 0.25) {
-              const pt2 = p2.getPointAtLength(t2 * p2.getTotalLength());
-              minDist = Math.min(minDist, Math.hypot(pt2.x-pt1.x, pt2.y-pt1.y));
-            }
-          });
-        }
-      });
-
-      if (minDist < 10) {
-        surrounding.push(color);
-      }
-    }
+    const surrounding = getSurroundingSelection(oldSelection, state.subSelection)
 
     state.setState({
       selection: oldSelection,
       groups: {
         ...state.groups,
         [ oldSelection ]: state.getGroupMembers(oldSelection).filter(p => !state.subSelected(p)),
-          [ state.newGroup(surrounding) ]: state.subSelection
+        [ state.newGroup(surrounding) ]: state.subSelection
       },
       subSelection: []
     });
@@ -988,7 +1024,7 @@ const scapToSVG = function*(scap) {
   const readStroke = () => {
     tokens.shift();
     const globalId = tokens.shift().substring(1);
-    const group = parseInt(tokens.shift());
+    let group = parseInt(tokens.shift());
     const strokeWidth = readThickness();
     const polyline = [];
     while (tokens.length>=3 && !tokens[0].startsWith('}')) {
@@ -999,6 +1035,9 @@ const scapToSVG = function*(scap) {
     }
     tokens.shift();
 
+    if (group < 0) {
+      group = -parseInt(globalId) - 1;
+    }
     groups[group] = groups[group] || [];
     groups[group].push({ globalId, polyline, strokeWidth });
   }
@@ -1017,6 +1056,9 @@ const scapToSVG = function*(scap) {
   readScap();
   yield false;
 
+  for (const c in state.ungrouped) {
+    delete state.ungrouped[c];
+  }
   colors = {};
   groupColors = {};
   for (let group in groups) {
@@ -1051,6 +1093,9 @@ const scapToSVG = function*(scap) {
     }
     colors[c] = true;
     groupColors[group] = c;
+    if (parseInt(group) < 0) {
+      state.ungrouped[c] = true;
+    }
     yield false;
   }
 
@@ -1065,6 +1110,7 @@ const scapToSVG = function*(scap) {
       const path = document.createElementNS(ns, 'path');
       path.setAttribute('d', `M ${polyline[0]} ${polyline.slice(1).map(c => 'L '+c).join(' ')}`);
       path.setAttribute('data-globalId', globalId);
+      path.setAttribute('data-ungrouped', state.ungrouped[groupColors[group]]);
       path.setAttribute('stroke', groupColors[group]);
       if (strokeWidth) path.setAttribute('data-strokeWidth', strokeWidth);
       path.setAttribute('stroke-width', strokeWidth || thickness);
