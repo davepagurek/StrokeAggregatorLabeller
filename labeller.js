@@ -1,5 +1,6 @@
 const ns = 'http://www.w3.org/2000/svg'; // needs to be passed in when creating SVG elements
 const svgContainer = document.getElementById('svgContainer');
+const splitSingleMessage = document.getElementById('splitSingleMessage');
 const reference = document.getElementById('reference');
 const sequence = (window.location.hash && sequences[window.location.hash.slice(1)]) || sequences[Object.keys(sequences)[0]];
 const sequenceLength = sequence.length;
@@ -117,10 +118,19 @@ function setSelectionMode(mode) {
   document.body.classList.remove('split');
   document.body.classList.remove('breaking');
   document.body.classList.remove('selector');
-  const changed = mode !== uiData.selectionMode;
+  const oldMode = uiData.selectionMode;
+  const changed = mode !== oldMode;
   document.body.classList.add(mode);
   uiData.selectionMode = mode;
-  if (changed) handleEscape();
+  if (changed) {
+    if (mode === 'split' && state.selection && state.subSelection && state.subSelection.length > 0) {
+      handleEscape();
+    } else if (mode === 'split' && state.selection && state.paths[state.selection].length === 1) {
+      handleEscape();
+    } else if (!(mode !== 'breaking' && oldMode === 'selector' && state.selection)) {
+      handleEscape();
+    }
+  }
 }
 
 const undoStack = [];
@@ -630,17 +640,32 @@ const setupLabeller = (name, svg) => {
       if (paths.length > 0) {
         document.body.classList.remove('unselected');
         handleEscape();
-        state.setState({ merge: false, split: false, selection: state.getGroup(paths[0]) });
+        if (paths.length > 1 && state.ungrouped[state.getGroup(paths[0])]) {
+          state.setState({
+            merge: false,
+            split: false,
+            selection: state.getGroup(paths[0]),
+            subSelection: paths.slice(1)
+          });
+        } else {
+          state.setState({ merge: false, split: false, selection: state.getGroup(paths[0]) });
+        }
       } else {
         handleEscape();
       }
     } else if (uiData.selectionMode === 'merge') {
       if (paths.length > 0) {
         document.body.classList.remove('unselected');
-        if (!state.merge || !state.selection) {
+        const startingNewMerge = !state.merge || !state.selection;
+        let mergingUngrouped = false;
+        if (startingNewMerge) {
           handleEscape();
           state.setState({ merge: true, selection: state.getGroup(paths[0]) });
-        } else {
+          if (state.ungrouped[state.getGroup(paths[0])]) {
+            mergingUngrouped = true;
+          }
+        }
+        if (!startingNewMerge || mergingUngrouped) {
           const groups = new Set(paths
             .map(p => state.getGroup(p))
             .filter(g => g !== state.selection));
@@ -675,7 +700,21 @@ const setupLabeller = (name, svg) => {
             });
           });
           handleEscape();
-          state.setState({ split: true, selection: state.getGroup(minPath) });
+          if (state.groups[state.getGroup(minPath)].length === 1) {
+            splitSingleMessage.classList.remove('shown');
+            const ungrouped = state.ungrouped[state.getGroup(minPath)];
+            setTimeout(() => {
+              if (ungrouped) {
+                splitSingleMessage.innerHTML = 'This stroke is ungrouped. You can only split apart grouped strokes.';
+              } else {
+                splitSingleMessage.innerHTML = 'This group has one stroke. You can only split groups with multiple strokes.';
+              }
+              splitSingleMessage.classList.add('shown');
+            }, 10);
+            handleEscape();
+          } else {
+            state.setState({ split: true, selection: state.getGroup(minPath) });
+          }
         } else {
           paths = paths.filter(p => state.getGroup(p) === state.selection);
           const allSelected = paths.every(path => state.subSelected(path));
