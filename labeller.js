@@ -2,7 +2,14 @@ const ns = 'http://www.w3.org/2000/svg'; // needs to be passed in when creating 
 const svgContainer = document.getElementById('svgContainer');
 const splitSingleMessage = document.getElementById('splitSingleMessage');
 const reference = document.getElementById('reference');
-const sequence = (window.location.hash && sequences[window.location.hash.slice(1)]) || sequences[Object.keys(sequences)[0]];
+const sequenceName =
+  window.location.hash && sequences[window.location.hash.slice(1)] ?
+  window.location.hash.slice(1) :
+  Object.keys(sequences)[0];
+const sequence = sequences[sequenceName];
+if (ungroupedSequences[sequenceName]) {
+  document.body.classList.add('containsUngrouped');
+}
 const sequenceLength = sequence.length;
 const next = document.getElementById('next');
 

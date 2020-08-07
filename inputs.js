@@ -463,4 +463,6 @@ const sequences = {
     //"alt_init_clusters/veyron11c_apost.scap",
   //]
 };
-
+const ungroupedSequences = {
+  test_ungrouped: true,
+};

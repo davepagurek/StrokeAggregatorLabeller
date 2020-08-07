@@ -77,11 +77,21 @@
   max-height: 300px;
   border: 4px solid #999;
   margin-bottom: 10px;
+  align-self: center;
 }
 #modal .slide img.big {
   max-height: 420px;
 }
 #modal.hidden {
+  display: none;
+}
+.ungroupedTxt {
+  display: none;
+}
+.hasUngrouped .ungroupedTxt {
+  display: initial;
+}
+.hasUngrouped .groupedTxt {
   display: none;
 }
 
