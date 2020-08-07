@@ -462,7 +462,44 @@ const sequences = {
     //"alt_init_clusters/Pig02fxd01_apost.scap",
     //"alt_init_clusters/veyron11c_apost.scap",
   //]
+  "ungrouped1": [
+    "data/BowTie01_tutorial_ungrouped.scap",
+    "ungrouped/Professional1_bumps_view2_presentation_apost.scap",
+    "ungrouped/Professional3_mouse_view1_presentation_apost.scap",
+    "ungrouped/02sketch_apost.scap",
+    "ungrouped/fruit_apost.scap",
+    "ungrouped/11sketch_apost.scap",
+    "ungrouped/mug_apost.scap",
+  ],
+  "ungrouped2": [
+    "data/BowTie01_tutorial_ungrouped.scap",
+    "ungrouped/hand1_apost.scap",
+    "ungrouped/hamstertoon_apost.scap",
+    "ungrouped/plushie1_apost.scap",
+    "ungrouped/clock_apost.scap",
+  ],
+  "ungrouped3": [
+    "data/BowTie01_tutorial_ungrouped.scap",
+    "ungrouped/Professional2_house_view2_concept_apost.scap",
+    "ungrouped/student4_potato_chip_view1_concept_apost.scap",
+    "ungrouped/03sketch_apost.scap",
+    "ungrouped/05sketch_apost.scap",
+    "ungrouped/06sketch_apost.scap",
+    "ungrouped/shesh_apost.scap",
+  ],
+  "ungrouped4": [
+    "data/BowTie01_tutorial_ungrouped.scap",
+    "ungrouped/lion_apost.scap",
+    "ungrouped/student7_shampoo_bottle_view1_presentation_apost.scap",
+    "ungrouped/04sketch_apost.scap",
+    "ungrouped/08sketch_apost.scap",
+    "ungrouped/09sketch_apost.scap",
+  ],
 };
 const ungroupedSequences = {
   test_ungrouped: true,
+  ungrouped1: true,
+  ungrouped2: true,
+  ungrouped3: true,
+  ungrouped4: true
 };
