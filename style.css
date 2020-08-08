@@ -172,7 +172,8 @@ a {
   opacity: 0.4;
   cursor: default;
 }
-.unselected #merge, .unselected #split, .unselected #break, .unselected #selector {
+.unselected #merge, .unselected #split, .unselected #break, .unselected #selector,
+.selector.selection #merge, .selector.selection:not(.oneStroke) #split, .selector.selection.oneStroke #break {
   opacity: 1;
   cursor: pointer;
 }
@@ -284,7 +285,7 @@ a {
 #svgContainer path[data-ungrouped="true"] {
   stroke: #999;
 }
-#svgContainer path.selected, .selector #svgContainer path.subSelection {
+#svgContainer path.selected, #svgContainer path.tmpGroup, .selector #svgContainer path.subSelection {
   stroke-width: 3px;
   stroke: #F0F;
   opacity: 1;
@@ -293,7 +294,7 @@ a {
   animation: selectedNotif 0.6s 1 normal linear;
 }
 
-.merge #svgContainer path.selected {
+.merge #svgContainer path.selected, .merge #svgContainer path.tmpGroup {
   pointer-events: none;
   opacity: 0.2;
   /*animation: selectedNotif 0.6s 1 normal linear, pulse 4s infinite normal linear;*/
@@ -310,7 +311,7 @@ a {
 .split.selection #svgContainer path.selected:hover {
   opacity: 1;
 }
-.merge.selection #svgContainer path.subSelection, .split.selection #svgContainer path.selected.subSelection, .breaking.selection #svgContainer path.selected.subSelection {
+.merge.selection #svgContainer path.subSelection:not(.tmpGroup), .split.selection #svgContainer path.selected.subSelection, .breaking.selection #svgContainer path.selected.subSelection {
   opacity: 1;
   stroke-width: 3px;
   stroke: #F00 !important;

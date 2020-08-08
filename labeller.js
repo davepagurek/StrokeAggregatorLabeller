@@ -132,10 +132,30 @@ function setSelectionMode(mode) {
   if (changed) {
     if (mode === 'split' && state.selection && state.subSelection && state.subSelection.length > 0) {
       handleEscape();
-    } else if (mode === 'split' && state.selection && state.paths[state.selection].length === 1) {
+    } else if (mode === 'split' && state.selection && state.groups[state.selection].length === 1) {
       handleEscape();
-    } else if (!(mode !== 'breaking' && oldMode === 'selector' && state.selection)) {
+    } else if (!(oldMode === 'selector' && state.selection)) {
       handleEscape();
+    } else if (mode === 'breaking') {
+      if (state.subSelection.length === 0 && state.groups[state.selection].length === 1) {
+        state.setState({
+          subSelection: state.groups[state.selection].slice(),
+        })
+        state.setState({
+          split: true,
+          breakAt: 0.5,
+        })
+      } else {
+        handleEscape();
+      }
+    } else if (state.selection) {
+      state.setState({
+        merge: mode === 'merge',
+        split: mode === 'split',
+      });
+      if (mode === 'merge' && state.subSelection.length > 0 && state.ungrouped[state.selection]) {
+        state.setState({ tmpGroup: [ ...state.groups[state.selection], ...state.subSelection ] });
+      }
     }
   }
 }
@@ -159,6 +179,7 @@ const state = {
   breakAt: null,
   splits: {},
   subSelection: [], // In split mode, the individual path elements that are set to become their own group
+  tmpGroup: [], // Ungrouped strokes to treat as a group for merging
   radius: 5,
   name: '', // The base name of the file
 
@@ -188,6 +209,7 @@ const state = {
       groups: mapObjValues(s.groups, group => [...group]),
       pathSamples: mapMapValues(s.pathSamples, samples => [...samples]),
       subSelection: [...s.subSelection],
+      tmpGroup: [...s.tmpGroup],
       splits: mapObjValues(s.splits, split => [...split]),
     };
   },
@@ -340,6 +362,14 @@ const state = {
           }
         }
 
+      } else if (key === 'tmpGroup') {
+        for (const p of state.tmpGroup) {
+          p.classList.remove('tmpGroup');
+        }
+        for (const p of newState.tmpGroup) {
+          p.classList.add('tmpGroup');
+        }
+
       } else if (key === 'subSelection') {
         // Remove old elements from the sub selection
         state.subSelection.forEach(p => p.classList.remove('subSelection'));
@@ -375,6 +405,11 @@ const state = {
       }
 
       state[key] = newState[key];
+      if (state.groups[state.selection] && state.groups[state.selection].length === 1 && state.subSelection.length === 0) {
+        document.body.classList.add('oneStroke');
+      } else {
+        document.body.classList.remove('oneStroke');
+      }
     }
 
     if (!fromStack) {
@@ -648,6 +683,7 @@ const setupLabeller = (name, svg) => {
         document.body.classList.remove('unselected');
         handleEscape();
         if (paths.length > 1 && state.ungrouped[state.getGroup(paths[0])]) {
+          paths = paths.filter(p => state.ungrouped[state.getGroup(p)]);
           state.setState({
             merge: false,
             split: false,
@@ -667,16 +703,23 @@ const setupLabeller = (name, svg) => {
         let mergingUngrouped = false;
         if (startingNewMerge) {
           handleEscape();
-          state.setState({ merge: true, selection: state.getGroup(paths[0]) });
+          state.setState({
+            merge: true,
+            selection: state.getGroup(paths[0])
+          });
           if (state.ungrouped[state.getGroup(paths[0])]) {
             mergingUngrouped = true;
+            paths = paths.filter(p => state.ungrouped[state.getGroup(p)]);
+            state.setState({ tmpGroup: paths.slice });
           }
         }
         if (!startingNewMerge || mergingUngrouped) {
           const groups = new Set(paths
             .map(p => state.getGroup(p))
             .filter(g => g !== state.selection));
-          paths = state.paths.filter(p => groups.has(state.getGroup(p)));
+          const tmpGroupPaths = new Set(state.tmpGroup);
+          paths = state.paths.filter(p =>
+            !tmpGroupPaths.has(p) && groups.has(state.getGroup(p)));
           const allSelected = paths.every(path => state.subSelected(path));
           if (allSelected) {
             state.setState({
@@ -799,7 +842,7 @@ const setupLabeller = (name, svg) => {
   while (undoStack.length > 0) undoStack.pop();
   while (redoStack.length > 0) redoStack.pop();
   state.setState({ name, paths }, true);
-  state.setState({ selection: null, merge: false, split: false, breakAt: null, subSelection: [], splits: {} }, true);
+  state.setState({ selection: null, merge: false, split: false, breakAt: null, subSelection: [], splits: {}, tmpGroup: [] }, true);
   state.commit();
 
   // Add click handlers on each new path element
@@ -874,6 +917,7 @@ const handleConfirm = () => {
       newGroup = state.newGroup(surrounding);
     }
 
+    state.setState({ tmpGroup: [] })
     state.subSelection.forEach(path => {
       if (state.getGroup(path) !== state.selection) {
         changed = true;
@@ -898,7 +942,7 @@ const handleConfirm = () => {
             [ newGroup ]: state.getGroupMembers(oldSelection)
           },
           selection: newGroup
-        });
+        }, true);
       }
       state.setState({ subSelection: [] }, true);
       state.commit();
@@ -945,7 +989,8 @@ function handleEscape() {
     merge: false,
     breakAt: null,
     subSelection: [],
-    selection: null
+    selection: null,
+    tmpGroup: [],
   });
   setSelectionMode(currentMode);
 }
@@ -1109,24 +1154,26 @@ const scapToSVG = function*(scap) {
   groupColors = {};
   for (let group in groups) {
     const surrounding = [];
-    for (let other in groups) {
-      if (!groupColors[other]) continue;
+    if (parseInt(group) < 0) {
+      for (let other in groups) {
+        if (!groupColors[other]) continue;
 
-      let minDist = Infinity;
-      groups[group].forEach(path1 => {
-        const p1 = path1.polyline.map(p => p.split(' ').map(x => parseInt(x)));
-        [p1[0], p1[Math.floor(p1.length/2)], p1[p1.length-1]].forEach(([x1,y1]) => {
-          groups[other].forEach(path2 => {
-            const p2 = path2.polyline.map(p => p.split(' ').map(x => parseInt(x)));
-            [p2[0], p2[Math.floor(p2.length/2)], p2[p2.length-1]].forEach(([x2,y2]) => {
-              minDist = Math.min(minDist, Math.hypot(x2-x1, y2-y1));
+        let minDist = Infinity;
+        groups[group].forEach(path1 => {
+          const p1 = path1.polyline.map(p => p.split(' ').map(x => parseInt(x)));
+          [p1[0], p1[Math.floor(p1.length/2)], p1[p1.length-1]].forEach(([x1,y1]) => {
+            groups[other].forEach(path2 => {
+              const p2 = path2.polyline.map(p => p.split(' ').map(x => parseInt(x)));
+              [p2[0], p2[Math.floor(p2.length/2)], p2[p2.length-1]].forEach(([x2,y2]) => {
+                minDist = Math.min(minDist, Math.hypot(x2-x1, y2-y1));
+              });
             });
           });
         });
-      });
 
-      if (minDist < 5) {
-        surrounding.push(groupColors[other]);
+        if (minDist < 5) {
+          surrounding.push(groupColors[other]);
+        }
       }
     }
     yield false;
