@@ -196,7 +196,7 @@ a {
   opacity: 0.4;
   cursor: default;
 }
-.split.selection.subselection #confirm, .merge.selection.subselection #confirm, .breaking.selection.subselection.single #confirm {
+.split.selection.subselection #confirm, .merge.selection.subselection #confirm, .merge.selection.selectedUngrouped #confirm, .breaking.selection.subselection.single #confirm {
   opacity: 1;
   cursor: pointer;
   animation: selectedNotif 0.6s 1 normal linear, pulse 4s infinite normal linear;

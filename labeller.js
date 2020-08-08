@@ -170,6 +170,7 @@ const undoKeys = new Set(['groups', 'splits'])
 const state = {
   paths: [], // References to all svg path elements onscreen
   groups: {}, // Path elements indexed by their colour
+  groupEdited: {},
   ungrouped: {}, // Colours representing ungrouped strokes
   pathSamples: new Map(),
   sampleLocations: [],
@@ -219,8 +220,6 @@ const state = {
     const newPaths = new Set(newState.paths);
     const removed = new Set([...oldPaths].filter(p => !newPaths.has(p)))
     const added = new Set([...newPaths].filter(p => !oldPaths.has(p)))
-    console.log(removed);
-    console.log(added);
     const parent = state.paths[0].parentElement;
     removed.forEach(p => parent.removeChild(p));
     added.forEach(p => {
@@ -293,6 +292,12 @@ const state = {
           state.groups[group] = state.groups[group] || [];
           state.groups[group].push(p);
         });
+
+        state.groupEdited = {};
+        const currentTime = (new Date()).getTime();
+        for (const group in state.groups) {
+          state.groupEdited[group] = currentTime;
+        }
 
         // Recreate path-from-location index
         state.pathSamples = new Map();
@@ -410,6 +415,11 @@ const state = {
       } else {
         document.body.classList.remove('oneStroke');
       }
+      if (state.selection && state.ungrouped[state.selection]) {
+        document.body.classList.add('selectedUngrouped');
+      } else {
+        document.body.classList.remove('selectedUngrouped');
+      }
     }
 
     if (!fromStack) {
@@ -498,6 +508,7 @@ const state = {
     const pointsEnd = points.slice(splitIdx);
 
     const newGroupColors = [];
+    const currentTime = (new Date()).getTime();
     const paths = [pointsStart, pointsEnd].map((polyline, i) => {
       const element = document.createElementNS(ns, 'path');
       element.setAttribute('stroke-width', path.getAttribute('stroke-width'));
@@ -512,6 +523,7 @@ const state = {
       element.setAttribute('data-ungrouped', state.ungrouped[group]);
       element.setAttribute('stroke', group);
       state.groups[group] = [ element  ];
+      state.groupEdited[group] = currentTime;
       path.parentElement.insertBefore(element, path);
       notify(element);
       return element;
@@ -602,7 +614,10 @@ const animateGroups = () => {
       }
     }
   });
-  const remaining = Object.keys(groups).sort();
+  state.groupEdited['__ungrouped'] = 0;
+  const remaining = Object.keys(groups).sort((a, b) => {
+    return state.groupEdited[b] - state.groupEdited[a];
+  });
 
   const highlightNext = () => {
     const group = remaining.pop();
@@ -710,7 +725,7 @@ const setupLabeller = (name, svg) => {
           if (state.ungrouped[state.getGroup(paths[0])]) {
             mergingUngrouped = true;
             paths = paths.filter(p => state.ungrouped[state.getGroup(p)]);
-            state.setState({ tmpGroup: paths.slice });
+            state.setState({ tmpGroup: paths.slice(1), subSelection: paths.slice(1) });
           }
         }
         if (!startingNewMerge || mergingUngrouped) {
@@ -905,7 +920,9 @@ const getSurroundingSelection = (oldSelection, paths) => {
 };
 
 const handleConfirm = () => {
-  if (!state.selection || state.subSelection.length === 0) return;
+  const mergingOneUngrouped = state.selection && state.ungrouped[state.selection]
+  if (!mergingOneUngrouped && (!state.selection || state.subSelection.length === 0)) return;
+  const currentTime = (new Date()).getTime();
 
   if (uiData.selectionMode === 'merge') {
     let changed = false;
@@ -915,6 +932,7 @@ const handleConfirm = () => {
     if (state.ungrouped[newGroup]) {
       const surrounding = getSurroundingSelection(oldSelection, state.subSelection)
       newGroup = state.newGroup(surrounding);
+      changed = true;
     }
 
     state.setState({ tmpGroup: [] })
@@ -944,7 +962,10 @@ const handleConfirm = () => {
           selection: newGroup
         }, true);
       }
-      state.setState({ subSelection: [] }, true);
+      state.setState({
+        subSelection: [],
+        groupEdited: { ...state.groupEdited, [ newGroup ]: currentTime }
+      }, true);
       state.commit();
     };
 
@@ -953,16 +974,21 @@ const handleConfirm = () => {
     const oldSelection = state.selection;
     state.setState({ selection: null });
 
-    const surrounding = getSurroundingSelection(oldSelection, state.subSelection)
+    const surrounding = getSurroundingSelection(oldSelection, state.subSelection);
+    const newGroup = state.newGroup(surrounding);
 
     state.setState({
       selection: oldSelection,
       groups: {
         ...state.groups,
         [ oldSelection ]: state.getGroupMembers(oldSelection).filter(p => !state.subSelected(p)),
-        [ state.newGroup(surrounding) ]: state.subSelection
+        [ newGroup ]: state.subSelection
       },
-      subSelection: []
+      subSelection: [],
+      groupEdited: {
+        ...state.groupEdited,
+        [ newGroup ]: currentTime,
+      }
     });
   } else if (uiData.selectionMode === 'breaking') {
     if (state.subSelection.length === 1 && state.breakAt !== null) {
