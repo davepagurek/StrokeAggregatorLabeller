@@ -66,7 +66,7 @@ document.getElementById('help-tool').addEventListener('click', () => {
 });
 
 const COUNTDOWN_LENGTH = 20;
-const HIGHLIGHT_TIME = 800;
+const HIGHLIGHT_TIME = 1200;
 let startTime = null;
 let zoom = 1;
 
