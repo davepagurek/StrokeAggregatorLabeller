@@ -366,6 +366,20 @@ const state = {
             }
           }
         }
+        state.paths.forEach((p) => {
+          p.classList.remove('notif');
+          p.parentElement.removeChild(p);
+        });
+        state.paths.sort((a, b) => {
+          const ungroupedA = state.ungrouped[state.getGroup(a)];
+          const ungroupedB = state.ungrouped[state.getGroup(b)];
+          if (ungroupedA !== ungroupedB) {
+            return ungroupedA ? 1 : -1;
+          } else {
+            return parseFloat(b.getAttribute('data-length')) - parseFloat(a.getAttribute('data-length'));
+          }
+        });
+        state.paths.forEach((p) => brushIndicator.parentElement.insertBefore(p, brushIndicator));
 
       } else if (key === 'tmpGroup') {
         for (const p of state.tmpGroup) {
@@ -522,6 +536,7 @@ const state = {
       newGroupColors.push(group);
       element.setAttribute('data-ungrouped', state.ungrouped[group]);
       element.setAttribute('stroke', group);
+      element.setAttribute('data-length', element.getTotalLength())
       state.groups[group] = [ element  ];
       state.groupEdited[group] = currentTime;
       path.parentElement.insertBefore(element, path);
