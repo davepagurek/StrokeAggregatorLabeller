@@ -1224,6 +1224,7 @@ const scapToSVG = function*(scap) {
   svg.setAttribute('data-height', h);
   svg.setAttribute('data-strokeWidth', thickness);
 
+  const allPaths = []
   for (let group in groups) {
     groups[group].forEach(({ globalId, polyline, strokeWidth }) => {
       const path = document.createElementNS(ns, 'path');
@@ -1233,9 +1234,14 @@ const scapToSVG = function*(scap) {
       path.setAttribute('stroke', groupColors[group]);
       if (strokeWidth) path.setAttribute('data-strokeWidth', strokeWidth);
       path.setAttribute('stroke-width', strokeWidth || thickness);
-      svg.appendChild(path);
+      path.setAttribute('data-length', path.getTotalLength())
+      allPaths.push(path)
     });
   }
+  allPaths.sort((a, b) => parseFloat(b.getAttribute('data-length')) - parseFloat(a.getAttribute('data-length')));
+  allPaths.forEach(path => {
+    svg.appendChild(path);
+  })
 
   yield svg;
 };
