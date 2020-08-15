@@ -540,12 +540,52 @@ const sequences = {
     "raw_init_liu18/Pig01c_pre.scap",
     "raw_init_liu18/Pig02fxd01_pre.scap",
     "raw_init_liu18/veyron11c_pre.scap",
-  ]
+  ],
+  "raw_new_init_1": [
+    "data/BowTie01_tutorial_ungrouped.scap",
+    "raw_new_init_clusters/lion.scap",
+    "raw_new_init_clusters/Artist_01_Sketch_03_apost.scap",
+    "raw_new_init_clusters/Artist_01_Sketch_04_apost.scap",
+    "raw_new_init_clusters/Artist_01_Sketch_01_apost.scap",
+    "raw_new_init_clusters/Artist_01_Sketch_02_apost.scap",
+  ],
+  "raw_new_init_2": [
+    "data/BowTie01_tutorial_ungrouped.scap",
+    "raw_new_init_clusters/Artist_02_Sketch_03_apost.scap",
+    "raw_new_init_clusters/Artist_02_Sketch_04_apost.scap",
+    "raw_new_init_clusters/Professional1_hairdryer_view1_concept_apost.scap",
+    "raw_new_init_clusters/Artist_03_Sketch_06_apost.scap",
+  ],
+  "raw_new_init_3": [
+    "data/BowTie01_tutorial_ungrouped.scap",
+    "raw_new_init_clusters/Artist_02_Sketch_06_apost.scap",
+    "raw_new_init_clusters/Artist_02_Sketch_07_apost.scap",
+    "raw_new_init_clusters/Artist_03_Sketch_01_apost.scap",
+  ],
+  "raw_new_init_4": [
+    "data/BowTie01_tutorial_ungrouped.scap",
+    "raw_new_init_clusters/Professional2_house_view2_presentation_apost.scap",
+    "raw_new_init_clusters/Professional3_potato_chip_view1_presentation_apost.scap",
+    "raw_new_init_clusters/student3_house_view1_presentation_apost.scap",
+    "raw_new_init_clusters/Artist_02_Sketch_05_apost.scap",
+  ],
+  "raw_new_init_5": [
+    "data/BowTie01_tutorial_ungrouped.scap",
+    "raw_new_init_clusters/Professional1_mixer_view2_presentation_apost.scap",
+    "raw_new_init_clusters/Professional2_house_view2_concept_apost.scap",
+    "raw_new_init_clusters/Professional3_potato_chip_view1_concept_apost.scap",
+    "raw_new_init_clusters/student1_wobble_surface_view1_presentation_apost.scap",
+  ],
 };
 const ungroupedSequences = {
   test_ungrouped: true,
   ungrouped1: true,
   ungrouped2: true,
   ungrouped3: true,
-  ungrouped4: true
+  ungrouped4: true,
+  raw_new_init_1: true,
+  raw_new_init_2: true,
+  raw_new_init_3: true,
+  raw_new_init_4: true,
+  raw_new_init_5: true,
 };
