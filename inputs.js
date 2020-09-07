@@ -657,6 +657,19 @@ const sequences = {
     "for_second_round/Tucanfxd01_label_101.scap",
     "for_second_round/veyron11c_label_101.scap",
   ],
+  "second_round7": [
+    "data/BowTie01_tutorial.scap",
+    "for_second_round_2/Artist_02_Sketch_03_label_104.scap",
+    "for_second_round_2/Artist_02_Sketch_04_label_104.scap",
+    "for_second_round_2/Artist_02_Sketch_06_label_104.scap",
+    "for_second_round_2/Artist_02_Sketch_07_label_104.scap",
+    "for_second_round_2/Artist_03_Sketch_01_label_104.scap",
+    "for_second_round_2/Artist_03_Sketch_06_label_104.scap",
+    "for_second_round_2/Professional1_hairdryer_view1_concept_label_104.scap",
+    "for_second_round_2/Professional1_mixer_view2_presentation_label_104.scap",
+    "for_second_round_2/Professional3_potato_chip_view1_concept_label_104.scap",
+    "for_second_round_2/student1_wobble_surface_view1_presentation_label_104.scap",
+  ]
 };
 const ungroupedSequences = {
   test_ungrouped: true,
