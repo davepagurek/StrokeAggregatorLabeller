@@ -669,7 +669,11 @@ const sequences = {
     "for_second_round_2/Professional1_mixer_view2_presentation_label_104.scap",
     "for_second_round_2/Professional3_potato_chip_view1_concept_label_104.scap",
     "for_second_round_2/student1_wobble_surface_view1_presentation_label_104.scap",
-  ]
+  ],
+  "12_2020": [
+    "12_2020/Ind_product_GW_03_norm_full_apost_ungrouped.scap",
+    "12_2020/Professional1_mixer_view1_presentation_result_angle_apost_ungrouped.scap",
+  ],
 };
 const ungroupedSequences = {
   test_ungrouped: true,
@@ -682,4 +686,5 @@ const ungroupedSequences = {
   raw_new_init_3: true,
   raw_new_init_4: true,
   raw_new_init_5: true,
+  "12_2020": true,
 };
