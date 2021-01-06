@@ -674,6 +674,9 @@ const sequences = {
     "12_2020/Ind_product_GW_03_norm_full_apost_ungrouped.scap",
     "12_2020/Professional1_mixer_view1_presentation_result_angle_apost_ungrouped.scap",
   ],
+  "character02": [
+    "01_2021/character02_apost.scap",
+  ],
 };
 const ungroupedSequences = {
   test_ungrouped: true,
