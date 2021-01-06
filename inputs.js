@@ -690,4 +690,5 @@ const ungroupedSequences = {
   raw_new_init_4: true,
   raw_new_init_5: true,
   "12_2020": true,
+  "character02": true,
 };
