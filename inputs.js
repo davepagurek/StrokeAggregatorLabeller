@@ -677,6 +677,14 @@ const sequences = {
   "character02": [
     "01_2021/character02_apost.scap",
   ],
+  "01_2021": [
+    "01_2021/hair_apost.scap",
+    "01_2021/Professional1_tubes_view1_presentation_result_angle_apost.scap",
+    "01_2021/Professional2_mouse_view1_presentation_result_angle_apost.scap",
+    "01_2021/Professional2_shampoo_bottle_view2_presentation_result_angle_apost.scap",
+    "01_2021/Professional2_vacuum_cleaner_view1_presentation_result_angle_apost.scap",
+    "01_2021/Professional3_house_view1_presentation_result_angle_apost.scap",
+  ],
 };
 const ungroupedSequences = {
   test_ungrouped: true,
@@ -691,4 +699,5 @@ const ungroupedSequences = {
   raw_new_init_5: true,
   "12_2020": true,
   "character02": true,
+  "01_2021": true,
 };
