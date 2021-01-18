@@ -685,6 +685,14 @@ const sequences = {
     "01_2021/Professional2_vacuum_cleaner_view1_presentation_result_angle_apost.scap",
     "01_2021/Professional3_house_view1_presentation_result_angle_apost.scap",
   ],
+  "01_17_2021": [
+    '01_17_2021/Ind_architecture_AST_01_norm_rough_apost.scap',
+    '01_17_2021/Ind_architecture_TU_02_norm_rough_apost.scap',
+    '01_17_2021/Ind_product_AS_15_norm_rough_apost.scap',
+    '01_17_2021/Ind_product_GW_03_norm_full_apost.scap',
+    '01_17_2021/Ind_product_PM_12_norm_rough_apost.scap',
+    '01_17_2021/Professional1_tubes_view1_presentation_apost.scap',
+  ],
 };
 const ungroupedSequences = {
   test_ungrouped: true,
@@ -700,4 +708,6 @@ const ungroupedSequences = {
   "12_2020": true,
   "character02": true,
   "01_2021": true,
+  "01_17_2021": true,
 };
+
