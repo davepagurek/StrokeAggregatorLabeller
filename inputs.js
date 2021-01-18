@@ -696,6 +696,9 @@ const sequences = {
   "Professional3_house": [
     "01_17_2021/Professional3_house_view2_presentation_result_angle_apost.scap",
   ],
+  "Ind_fashion": [
+    "01_17_2021/Ind_fashion_ML_05_norm_rough_apost.scap",
+  ],
 };
 const ungroupedSequences = {
   test_ungrouped: true,
@@ -713,5 +716,6 @@ const ungroupedSequences = {
   "01_2021": true,
   "01_17_2021": true,
   "Professional3_house": true,
+  "Ind_fashion": true,
 };
 
