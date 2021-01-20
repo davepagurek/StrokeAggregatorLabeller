@@ -702,6 +702,9 @@ const sequences = {
   "Ind_fashion2": [
     "01_17_2021/Ind_fashion_HF_02_norm_rough_apost.scap",
   ],
+  "shell": [
+    "01_20_2021/shell_apost.scap",
+  ],
 };
 const ungroupedSequences = {
   test_ungrouped: true,
@@ -721,5 +724,6 @@ const ungroupedSequences = {
   "Professional3_house": true,
   "Ind_fashion": true,
   "Ind_fashion2": true,
+  "shell": true,
 };
 
