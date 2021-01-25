@@ -705,6 +705,9 @@ const sequences = {
   "shell": [
     "01_20_2021/shell_apost.scap",
   ],
+  "11sketch": [
+    "01_25_2021/11sketch_apost.scap",
+  ],
 };
 const ungroupedSequences = {
   test_ungrouped: true,
@@ -725,5 +728,6 @@ const ungroupedSequences = {
   "Ind_fashion": true,
   "Ind_fashion2": true,
   "shell": true,
+  "11sketch": true,
 };
 
